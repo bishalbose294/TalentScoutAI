@@ -33,9 +33,9 @@ class Chunk:
 
         return self.chunkslist
 
-input_file = 'input_file/UN Staff Rules and Regulations 2018.pdf'
 
-chunker = Chunk(input_file)
-l = chunker.chunk()
-print(len(l))
-
+if __name__ == "__main__":
+    input_file = 'input_file/xyz.pdf'
+    chunker = Chunk(input_file)
+    l = chunker.chunk()
+    print(len(l))
