@@ -2,3 +2,4 @@ google-generativeai
 sentence-transformers
 pymupdf
 nltk
+semantic-text-splitter

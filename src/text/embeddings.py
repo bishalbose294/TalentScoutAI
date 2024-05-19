@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-from text_cleaning import TextCleaner
+from text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()
