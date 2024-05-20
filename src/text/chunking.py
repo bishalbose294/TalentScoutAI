@@ -3,7 +3,7 @@ from semantic_text_splitter import TextSplitter
 import configparser
 
 config = configparser.ConfigParser()
-config.read("config.cfg")
+config.read("src/configs/config.cfg")
 chunk_config = config["CHUNKING"]
 
 

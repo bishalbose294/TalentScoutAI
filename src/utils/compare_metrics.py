@@ -1,7 +1,7 @@
 
 from sentence_transformers import util
-from text.embeddings import SentEmbeddings
-from text.text_cleaning import TextCleaner
+from src.text.embeddings import SentEmbeddings
+from src.text.text_cleaning import TextCleaner
 
 class CompareMetrics:
 

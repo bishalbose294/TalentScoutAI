@@ -1,9 +1,9 @@
 from sentence_transformers import SentenceTransformer
-from text.text_cleaning import TextCleaner
+from src.text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()
-config.read("config.cfg")
+config.read("src/configs/config.cfg")
 embed_config = config["EMBEDDINGS"]
 
 

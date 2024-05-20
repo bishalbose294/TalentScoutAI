@@ -1,6 +1,6 @@
 import os
-from text.chunking import Chunk
-from utils.compare_metrics import CompareMetrics
+from src.text.chunking import Chunk
+from src.utils.compare_metrics import CompareMetrics
 
 
 class MatchJobCandidate:
@@ -24,16 +24,13 @@ class MatchJobCandidate:
         jdChunkList = chunkJd.chunk(jdFile)
         resumeChunkList = chunkResume.chunk(resumeFile)
 
-        print("Jd Chunk - ",len(jdChunkList))
-        print("Resume Chunk - ",len(resumeChunkList))
-
         for jdchunk in jdChunkList:
             for resumechunk in resumeChunkList:
                 value = self.compare(jdchunk,resumechunk)
                 if value > 0.5:
-                    metric.append(value)
+                    metric.append(1)
         
-        print(metric)
+        return metric
         
         pass
 
@@ -48,11 +45,12 @@ class MatchJobCandidate:
             for resume in resume_list:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
-                print("\n\n")
-                print(jd)
-                print(resume)
-                self.match(jdFile, resumeFile)
-            break
+                metric = self.match(jdFile, resumeFile)
+                if metric:
+                    print("\n\n")
+                    print(jd)
+                    print(resume)
+                    print(sum(metric))
         pass
 
     pass
