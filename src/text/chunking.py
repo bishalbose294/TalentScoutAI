@@ -21,6 +21,17 @@ class Chunk:
         chunks = self.splitter.chunks(text)
 
         return chunks
+    
+    def getTextFromPdf(self, inputFileLoc) -> list:
+        doc = fitz.open(inputFileLoc)
+
+        text = ""
+        for page in doc:
+            text += " "+ page.get_text()
+            
+        return text
+
+
 
 
 if __name__ == "__main__":

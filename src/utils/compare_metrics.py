@@ -10,22 +10,21 @@ class CompareMetrics:
         self.textCleaner = TextCleaner()
         pass
     
-    def dot_score(self, sent1, sent2):
-        emb1 = self.sentEmbedding.computeEmbedding(sent1)
-        emb2 = self.sentEmbedding.computeEmbedding(sent2)
+    def dot_score(self, emb1, emb2):
         return round(util.dot_score(emb1, emb2).numpy()[0][0].tolist(),2)
 
-    def cos_sim(self, sent1, sent2):
-        emb1 = self.sentEmbedding.computeEmbedding(sent1)
-        emb2 = self.sentEmbedding.computeEmbedding(sent2)
+    def cos_sim(self, emb1, emb2):
         return round(util.cos_sim(emb1, emb2).numpy()[0][0].tolist(),2)
 
     def calculate_similarity(self, sent1, sent2):
         metrics = dict()
         cleaned_sent1 = self.textCleaner.clean_text(sent1)
         cleaned_sent2 = self.textCleaner.clean_text(sent2)
-        metrics['dot_score'] = self.dot_score(cleaned_sent1, cleaned_sent2)
-        metrics['cos_sim'] = self.cos_sim(cleaned_sent1, cleaned_sent2)
+        
+        emb1 = self.sentEmbedding.computeEmbedding(cleaned_sent1)
+        emb2 = self.sentEmbedding.computeEmbedding(cleaned_sent2)
+        metrics['dot_score'] = self.dot_score(emb1, emb2)
+        metrics['cos_sim'] = self.cos_sim(emb1, emb2)
 
         ## sending only cos_sim as both are same
         return metrics['cos_sim']

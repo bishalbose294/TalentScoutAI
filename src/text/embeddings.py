@@ -18,6 +18,14 @@ class SentEmbeddings():
         clean_sent = cleaner.clean_text(sentence)
         return self.model.encode(clean_sent)
         pass
+
+    def computeEmbeddingList(self, sentenceList):
+        cleaner = TextCleaner()
+        cleaned_sentList = []
+        for i in range(len(sentenceList)):
+           cleaned_sentList.append(cleaner.clean_text(sentenceList[i]))
+        return self.model.encode(cleaned_sentList)
+        pass
     
     pass
 

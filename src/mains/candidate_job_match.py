@@ -1,12 +1,21 @@
 import os
 from src.text.chunking import Chunk
 from src.utils.compare_metrics import CompareMetrics
+from src.mains.resume_analyzer import ResumeAnalyzer
+import configparser
 
+config = configparser.ConfigParser()
+config.read("src/configs/config.cfg")
+candidate_config = config["CANDIDATE"]
+
+pointsThreshold = int(candidate_config["RESUME_MATCH_POINT_THRESHOLD"])
 
 class MatchJobCandidate:
 
     def __init__(self) -> None:
         self.compareMetrics = CompareMetrics()
+        self.analyzer = ResumeAnalyzer()
+        self.chunk = Chunk()
         pass
 
 
@@ -17,12 +26,8 @@ class MatchJobCandidate:
     def match(self, jdFile, resumeFile):
 
         metric = []
-
-        chunkJd = Chunk()
-        chunkResume = Chunk()
-
-        jdChunkList = chunkJd.chunk(jdFile)
-        resumeChunkList = chunkResume.chunk(resumeFile)
+        jdChunkList = self.chunk.chunk(jdFile)
+        resumeChunkList = self.chunk.chunk(resumeFile)
 
         for jdchunk in jdChunkList:
             for resumechunk in resumeChunkList:
@@ -30,11 +35,20 @@ class MatchJobCandidate:
                 if value > 0.5:
                     metric.append(1)
         
-        return metric
+        return sum(metric)
         
         pass
 
-    def keywordsMatch(self,):
+    def keywordsMatch(self, jdFile, resumeFile):
+
+        jdtext = self.chunk.getTextFromPdf(jdFile)
+        resumeText = self.chunk.getTextFromPdf(resumeFile)
+
+        keywordsJD = self.analyzer.extractKeywords(jdtext)
+
+        keywordsRES = self.analyzer.extractKeywords(resumeText)
+
+        return self.analyzer.keywordsPartialMatch(keywordsJD, keywordsRES)
         pass
 
     def run(self, jodDescFolder, resumeFolder):
@@ -46,11 +60,14 @@ class MatchJobCandidate:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
                 metric = self.match(jdFile, resumeFile)
-                if metric:
-                    print("\n\n")
-                    print(jd)
-                    print(resume)
-                    print(sum(metric))
+                print("\n")
+                print("Job Description - ",jd)
+                print("Resume - ",resume)
+                print("Pointers - ",metric)
+                if metric >= pointsThreshold:
+                    print("Matched Keywords : ",self.keywordsMatch(jdFile, resumeFile))
+                else:
+                    print()
         pass
 
     pass
