@@ -4,3 +4,5 @@ pymupdf
 nltk
 semantic-text-splitter
 yake
+flask
+flask-cors
