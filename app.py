@@ -39,14 +39,14 @@ def calculate_scores():
          file.save(filePath)
       
       match = MatchJobCandidate()
-      response = match.generatePointers(jds_folder, res_foler)
+      response = match.extractJDResumeKeywords(jds_folder, res_foler)
 
       return json.dumps(response)
    except Exception as ex:
       print("Exception: ",str(ex))
       return jsonify({"error": str(ex)})
    finally:
-      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False, onerror=None)
+      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
    
 
 app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, methods=methods)

@@ -2,6 +2,8 @@ document.getElementById('compare-button').addEventListener('click', function() {
     var jdfiles = document.getElementById('jd');
     var resfiles = document.getElementById('resume');
 
+    document.getElementById('comparison-output').innerText = 'Genarating Response..';
+
     if (jdfiles.value.length < 1 || resfiles.value.length < 1)  {
         alert("Please select pdf to upload..");
         return false;
@@ -40,4 +42,10 @@ document.getElementById('compare-button').addEventListener('click', function() {
         console.error('Error:', error);
         document.getElementById('comparison-output').innerText = 'An error occurred during comparison.';
     });
+});
+
+
+document.getElementById('clear-button').addEventListener('click', function() {
+    document.getElementById('upload-form').reset();
+    document.getElementById('comparison-output').innerText = '';
 });

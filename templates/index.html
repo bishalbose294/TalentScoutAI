@@ -19,10 +19,11 @@
                 <input type="file" id="resume" accept="application/pdf" required multiple>
             </div>
             <button type="button" id="compare-button">Compare</button>
+            <button type="button" id="clear-button">Clear All</button>
         </form>
         <div id="results">
             <h2>Comparison Results</h2>
-            <div id="comparison-output"></div>
+            <div id="comparison-output" style="overflow-y: scroll; height:400px;"></div>
         </div>
     </div>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
