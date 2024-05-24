@@ -51,23 +51,45 @@ class MatchJobCandidate:
         return self.analyzer.keywordsPartialMatch(keywordsJD, keywordsRES)
         pass
 
-    def run(self, jodDescFolder, resumeFolder):
+    def generatePointers(self, jodDescFolder, resumeFolder):
         jd_list = os.listdir(jodDescFolder)
         resume_list = os.listdir(resumeFolder)
 
+        jd_dict = dict()
+
         for jd in jd_list:
+
+            resume_dict = dict()
+
             for resume in resume_list:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
                 metric = self.match(jdFile, resumeFile)
-                print("\n")
-                print("Job Description - ",jd)
-                print("Resume - ",resume)
-                print("Pointers - ",metric)
-                if metric >= pointsThreshold:
-                    print("Matched Keywords : ",self.keywordsMatch(jdFile, resumeFile))
-                else:
-                    print()
+                resume_dict[resume] = metric
+            
+            jd_dict[jd] = {k: v for k, v in sorted(resume_dict.items(), key=lambda item: item[1], reverse=True)}
+        
+        return jd_dict
+        pass
+
+    def extractJDResumeKeywords(self, jodDescFolder, resumeFolder):
+        jd_list = os.listdir(jodDescFolder)
+        resume_list = os.listdir(resumeFolder)
+
+        jd_dict = dict()
+
+        for jd in jd_list:
+
+            resume_dict = dict()
+
+            for resume in resume_list:
+                jdFile = os.path.join(jodDescFolder, jd)
+                resumeFile = os.path.join(resumeFolder, resume)
+                resume_dict[resume] = self.keywordsMatch(jdFile, resumeFile)
+                
+            jd_dict[jd] = resume_dict
+        
+        return jd_dict
         pass
 
     pass

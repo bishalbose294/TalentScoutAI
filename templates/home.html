@@ -1,5 +1,113 @@
+<!DOCTYPE html>
 <html>
-   <body>
-      <h1>This is Home Page</h1>
-   </body>
+
+<head>
+   <title>Talent-Scout-AI</title>
+   <style>
+      body {
+         background-image: url("https://i.pinimg.com/originals/cb/53/c1/cb53c15e1f01254fbdcd9cde60825dba.jpg");
+         font-family: Georgia, Times, serif;
+         color: white;
+         background-color: powderblue;
+         background-repeat: no-repeat;
+      }
+      img {
+         width:300px;
+         height:300px;
+         background-image: url("https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-network-placeholder-png-image_3416659.jpg");
+         background-position: center;
+         background-size: contain;
+      }
+      h1 {
+         font-family: Helvetica, Arial;
+      }
+      .content {
+         width: 800px;
+         height: 800px;
+         position: absolute;
+         /*Can also be `fixed`*/
+         left: 10%;
+         right: 0;
+         top: 10%;
+         bottom: 0;
+         margin: auto;
+         /*Solves a problem in which the content is being cut when the div is smaller than its' wrapper:*/
+         max-width: 100%;
+         max-height: 100%;
+         overflow: auto;
+      }
+      .btncls {
+         background-color: #B80C4D;
+         border: #2e6da4;
+         font-family: Arial, Geneva, Arial, Helvetica, sans-serif;
+         font-size: 15px;
+         color: #fff;
+         letter-spacing: 1px;
+         padding: 8px 12px;
+         font-size: 14px;
+         font-weight: normal;
+         border-radius: 4px;
+         line-height: 1.5;
+         text-decoration: none
+      }
+      textarea {
+         resize: none;
+      }
+   </style>
+   <script>
+      
+      function uploadCheck() {
+         var jdfiles = document.getElementById("jdfiles");
+         var resfiles = document.getElementById("resfiles");
+         if (jdfiles.value.length < 1 || resfiles.value.length < 1)  {
+            alert("Please select pdf to upload..");
+            return false;
+         }
+         else if(jdfiles.files.length > 1){
+            alert("Max 1 file can be uploaded in JD.");
+            return false;
+         }
+         else if(resfiles.files.length > 5){
+            alert("Max 5 files can be uploaded in Resume.");
+            return false;
+         }
+         else {
+            document.getElementById("pdfupload").submit();
+         }
+      }
+
+
+      function refreshPage() {
+         window.location = "/"
+      }
+
+   </script>
+</head>
+
+<body>
+   <div class='content'>
+      <h3>Upload PDF Here:
+      </h3>
+      <form name="pdfupload" id="pdfupload" method="POST" action={{ url_for( "calculate_scores" ) }} enctype="multipart/form-data">
+         <table>
+            <tr>
+               <td><label>Upload JDs</label></td>
+               <td><input type="file" class="btn" id="jdfiles" name="jdfiles" autocomplete="off" accept="application/pdf" multiple ></td>
+            </tr>
+            <tr>
+               <td><label>Upload Resumes</label></td>
+               <td><input type="file" class="btn" id="resfiles" name="resfiles" autocomplete="off" accept="application/pdf" multiple ></td>
+            </tr>
+            <tr>
+               <td><input type="button" class="btncls" value="Compare" onClick="uploadCheck();"></td>
+               <td><input type="button" class="btncls" value="Clear" onclick="refreshPage();"></td>
+            </tr>
+         </table>
+      </form>
+      <br>
+
+      {{ response }}
+   </div>
+</body>
+
 </html>
