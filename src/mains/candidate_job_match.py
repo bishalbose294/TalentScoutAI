@@ -2,6 +2,7 @@ import os
 from src.text.chunking import Chunk
 from src.utils.compare_metrics import CompareMetrics
 from src.mains.resume_analyzer import ResumeAnalyzer
+from src.text.embeddings import SentEmbeddings
 import configparser
 
 config = configparser.ConfigParser()
@@ -16,22 +17,21 @@ class MatchJobCandidate:
         self.compareMetrics = CompareMetrics()
         self.analyzer = ResumeAnalyzer()
         self.chunk = Chunk()
+        self.embedding = SentEmbeddings()
         pass
 
-
-    def compare(self, sent1, sent2):
-        return self.compareMetrics.calculate_similarity(sent1, sent2)
-        pass
-
-    def match(self, jdFile, resumeFile):
+    def __match(self, jdFile, resumeFile):
 
         metric = []
         jdChunkList = self.chunk.chunk(jdFile)
         resumeChunkList = self.chunk.chunk(resumeFile)
 
-        for jdchunk in jdChunkList:
-            for resumechunk in resumeChunkList:
-                value = self.compare(jdchunk,resumechunk)
+        jdchunkEmbeddings = self.embedding.computeEmbeddingList(jdChunkList)
+        jdresumeEmbeddings = self.embedding.computeEmbeddingList(resumeChunkList)
+
+        for jdchunkembed in jdchunkEmbeddings:
+            for resumechunkembed in jdresumeEmbeddings:
+                value = self.compareMetrics.cos_sim(jdchunkembed,resumechunkembed)
                 if value > 0.5:
                     metric.append(1)
         
@@ -39,7 +39,7 @@ class MatchJobCandidate:
         
         pass
 
-    def keywordsMatch(self, jdFile, resumeFile):
+    def __keywordsMatch(self, jdFile, resumeFile):
 
         jdtext = self.chunk.getTextFromPdf(jdFile)
         resumeText = self.chunk.getTextFromPdf(resumeFile)
@@ -64,7 +64,7 @@ class MatchJobCandidate:
             for resume in resume_list:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
-                metric = self.match(jdFile, resumeFile)
+                metric = self.__match(jdFile, resumeFile)
                 resume_dict[resume] = metric
             
             jd_dict[jd] = {k: v for k, v in sorted(resume_dict.items(), key=lambda item: item[1], reverse=True)}
@@ -85,7 +85,7 @@ class MatchJobCandidate:
             for resume in resume_list:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
-                resume_dict[resume] = self.keywordsMatch(jdFile, resumeFile)
+                resume_dict[resume] = self.__keywordsMatch(jdFile, resumeFile)
                 
             jd_dict[jd] = resume_dict
         

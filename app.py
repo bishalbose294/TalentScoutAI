@@ -39,9 +39,22 @@ def calculate_scores():
          file.save(filePath)
       
       match = MatchJobCandidate()
-      response = match.extractJDResumeKeywords(jds_folder, res_foler)
+      pointers = match.generatePointers(jds_folder, res_foler)
+      keywords = match.extractJDResumeKeywords(jds_folder, res_foler)
 
-      return json.dumps(response)
+      final_dict = dict()
+
+      for jd, resumePointers in pointers.items():
+         temp_dict = dict()
+         for resume, points in resumePointers.items():
+            temp_dict[resume] = {
+               'points' : points,
+               'keywords' : keywords[jd][resume],
+            }
+         final_dict[jd] = temp_dict
+
+      return json.dumps(final_dict)
+   
    except Exception as ex:
       print("Exception: ",str(ex))
       return jsonify({"error": str(ex)})
