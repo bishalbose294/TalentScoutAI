@@ -3,6 +3,8 @@ from src.text.text_cleaning import TextCleaner
 from src.text.embeddings import SentEmbeddings
 from src.utils.compare_metrics import CompareMetrics
 import configparser
+from src.text.keywords import KeyphraseExtractionPipeline
+
 
 config = configparser.ConfigParser()
 config.read("src/configs/config.cfg")
@@ -17,9 +19,10 @@ class ResumeAnalyzer:
 
     def __init__(self) -> None:
 
-        self.custom_kw_extractor = yake.KeywordExtractor(lan="en", n=3, dedupLim=0.9, dedupFunc='seqm', 
-                                                         windowsSize=5, top=20, features=None)
-        
+        # self.custom_kw_extractor = yake.KeywordExtractor(lan="en", n=3, dedupLim=0.9, dedupFunc='seqm', 
+        #                                                  windowsSize=5, top=20, features=None)
+
+        self.keywordExtractor = KeyphraseExtractionPipeline()
         self.cleaning = TextCleaner()
         self.embeddings = SentEmbeddings()
         self.compare = CompareMetrics()
@@ -28,10 +31,11 @@ class ResumeAnalyzer:
 
 
     def extractKeywords(self, text):
-        keywords = self.custom_kw_extractor.extract_keywords(text)
+        # keywords = self.custom_kw_extractor.extract_keywords(text)
+        keywords = self.keywordExtractor(text)
         keylist = []
         for kw in keywords:
-            keylist.append(self.cleaning.clean_text(kw[0]))
+            keylist.append(self.cleaning.clean_text(kw))
         
         return keylist
         pass
@@ -50,7 +54,6 @@ class ResumeAnalyzer:
         for i in range(len(jdKeywords)):
             resKeys = []
             for j in range(len(resumeKeywords)):
-                
                 metric = self.compare.cos_sim(jdKeywords_embed[i], resumeKeywords_embed[j])
                 if metric > matchThreshold:
                     resKeys.append(resumeKeywords[j])

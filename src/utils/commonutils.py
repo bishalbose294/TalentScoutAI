@@ -1,5 +1,7 @@
 import os
 import json
+import re
+
 
 class CommonUtils:
 
@@ -15,7 +17,12 @@ class CommonUtils:
         with open(os.path.join("src", "configs", "abbr.json"), "r") as json_file:
             data = json.load(json_file)
         return data
+    
+    def has_numbers(self, inputString):
+        return bool(re.search(r'\d', inputString))
+
     pass
+
 
 
 if __name__ == "__main__":

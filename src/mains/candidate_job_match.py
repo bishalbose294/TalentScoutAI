@@ -3,6 +3,7 @@ from src.text.chunking import Chunk
 from src.utils.compare_metrics import CompareMetrics
 from src.mains.resume_analyzer import ResumeAnalyzer
 from src.text.embeddings import SentEmbeddings
+from src.utils.commonutils import CommonUtils
 import configparser
 
 config = configparser.ConfigParser()
@@ -18,6 +19,7 @@ class MatchJobCandidate:
         self.analyzer = ResumeAnalyzer()
         self.chunk = Chunk()
         self.embedding = SentEmbeddings()
+        self.utility = CommonUtils()
         pass
 
     def __match(self, jdFile, resumeFile):
@@ -41,15 +43,28 @@ class MatchJobCandidate:
 
     def __keywordsMatch(self, jdFile, resumeFile):
 
-        jdtext = self.chunk.getTextFromPdf(jdFile)
-        resumeText = self.chunk.getTextFromPdf(resumeFile)
+        jdtext_list = self.chunk.chunk(jdFile)
+        resumeText_list = self.chunk.chunk(resumeFile)
+        
+        keywordsJD=[]
+        for jdtext in jdtext_list:
+            keywordsJD.extend(self.analyzer.extractKeywords(jdtext))
 
-        keywordsJD = self.analyzer.extractKeywords(jdtext)
+        keywordsJD = sorted(list(set(keywordsJD)))
+    
+        keywordsRES = []
+        for resumeText in resumeText_list:
+            keywordsRES.extend(self.analyzer.extractKeywords(resumeText))
+        
+        keywordsRES = sorted(list(set(keywordsRES)))
+        resumeKey = []
+        for keyword in keywordsRES:
+            if not self.utility.has_numbers(keyword):
+                resumeKey.append(keyword)
 
-        keywordsRES = self.analyzer.extractKeywords(resumeText)
-
-        return self.analyzer.keywordsPartialMatch(keywordsJD, keywordsRES)
+        return self.analyzer.keywordsPartialMatch(keywordsJD, keywordsRES), resumeKey
         pass
+
 
     def generatePointers(self, jodDescFolder, resumeFolder):
         jd_list = os.listdir(jodDescFolder)
@@ -85,7 +100,7 @@ class MatchJobCandidate:
             for resume in resume_list:
                 jdFile = os.path.join(jodDescFolder, jd)
                 resumeFile = os.path.join(resumeFolder, resume)
-                resume_dict[resume] = self.__keywordsMatch(jdFile, resumeFile)
+                resume_dict[resume], resume_dict[resume]["resume_keywords"]  = self.__keywordsMatch(jdFile, resumeFile)
                 
             jd_dict[jd] = resume_dict
         

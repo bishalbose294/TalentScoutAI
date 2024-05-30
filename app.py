@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, jsonify
 from flask_cors import CORS
 import simplejson as json
-import os, pathlib, time
+import os, pathlib, time, traceback
 import shutil
 from src.mains.candidate_job_match import MatchJobCandidate
 
@@ -56,7 +56,8 @@ def calculate_scores():
       return json.dumps(final_dict)
    
    except Exception as ex:
-      print("Exception: ",str(ex))
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
       return jsonify({"error": str(ex)})
    finally:
       shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
