@@ -1,9 +1,10 @@
-import yake
 from src.text.text_cleaning import TextCleaner
 from src.text.embeddings import SentEmbeddings
 from src.utils.compare_metrics import CompareMetrics
-import configparser
+import configparser, os
 from src.text.keywords import KeyphraseExtractionPipeline
+from src.text.chunking import Chunk
+from transformers import pipeline
 
 
 config = configparser.ConfigParser()
@@ -13,25 +14,25 @@ analyzer_config = config["ANALYZER"]
 topKey = float(analyzer_config["TOP_KEYWORDS"])
 maxGram = float(analyzer_config["MAX_KEYWORDS_SIZE"])
 matchThreshold = float(analyzer_config["KEYWORD_MATCH_THRESHOLD"])
-
+resume_summarizer = analyzer_config["RESUME_SUMMARIZER"]
+maxlength = int(analyzer_config["RESUME_MAXLENGTH"])
+minlength = int(analyzer_config["RESUME_MINLENGTH"])
 
 class ResumeAnalyzer:
 
     def __init__(self) -> None:
 
-        # self.custom_kw_extractor = yake.KeywordExtractor(lan="en", n=3, dedupLim=0.9, dedupFunc='seqm', 
-        #                                                  windowsSize=5, top=20, features=None)
-
         self.keywordExtractor = KeyphraseExtractionPipeline()
         self.cleaning = TextCleaner()
         self.embeddings = SentEmbeddings()
         self.compare = CompareMetrics()
+        self.chunk = Chunk(chunksize=1500, overlap=100)
+        self.summarizer = pipeline("summarization", model=resume_summarizer)
         
         pass
 
 
     def extractKeywords(self, text):
-        # keywords = self.custom_kw_extractor.extract_keywords(text)
         keywords = self.keywordExtractor(text)
         keylist = []
         for kw in keywords:
@@ -64,4 +65,33 @@ class ResumeAnalyzer:
         return match_jd_res_key
         pass
     
+    def __summarize(self, text):
+        return self.summarizer(text, max_length=maxlength, min_length=minlength, do_sample=False)[0]["summary_text"]
+        pass
+
+    def resumeSummarizer(self, resumeFile):
+        resumeChunk_list = self.chunk.chunk(resumeFile)
+        summarize = ""
+        summareized_list = self.__summarize(resumeChunk_list)
+        for summary in summareized_list:
+            summarize += " "+summary["summary_text"]
+        return summarize
+        pass
+
+    def resumeBatchSummarizer(self, resumeFolder):
+        resume_list = os.listdir(resumeFolder)
+
+        resumeSummarize = dict()
+
+        for resumeFile in resume_list:
+            file = os.path.join(resumeFolder, resumeFile)
+            resumeChunk_list = self.chunk.chunk(file)
+            summarize = ""
+            for chunkNo in resumeChunk_list:
+                summarize += " "+self.__summarize(chunkNo)
+            resumeSummarize[resumeFile] = summarize
+
+        return resumeSummarize
+        pass
+
     pass

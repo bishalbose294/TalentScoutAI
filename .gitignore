@@ -1,4 +1,5 @@
 *env/
 *pycache*/
 *test_data/
+uploads/*
 test_file.py

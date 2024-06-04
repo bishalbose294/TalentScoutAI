@@ -8,8 +8,8 @@ chunk_config = config["CHUNKING"]
 
 
 class Chunk:
-    def __init__(self, ) -> None:
-        self.splitter = TextSplitter(capacity=int(chunk_config["CHUNK_SIZE"]), overlap=int(chunk_config["CHUNK_OVERLAP"]))
+    def __init__(self, chunksize=int(chunk_config["CHUNK_SIZE"]), overlap=int(chunk_config["CHUNK_OVERLAP"])) -> None:
+        self.splitter = TextSplitter(capacity=chunksize, overlap=overlap)
 
     def chunk(self, inputFileLoc) -> list:
         doc = fitz.open(inputFileLoc)

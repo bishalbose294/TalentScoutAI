@@ -4,6 +4,7 @@ import simplejson as json
 import os, pathlib, time, traceback
 import shutil
 from src.mains.candidate_job_match import MatchJobCandidate
+from src.mains.resume_analyzer import ResumeAnalyzer
 
 app = Flask(__name__)
 CORS(app=app)
@@ -62,8 +63,35 @@ def calculate_scores():
    finally:
       shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
    
-
 app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, methods=methods)
+
+def summarize_resume():
+   try:
+      timestr = time.strftime("%Y%m%d_%H%M%S")
+      
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
+      os.makedirs(res_foler)
+      
+      resumefiles = request.files.getlist("resfiles")
+      for file in resumefiles:
+         filePath = os.path.join(res_foler, file.filename)
+         file.save(filePath)
+      
+
+      resumeAnalyze = ResumeAnalyzer()
+      response = resumeAnalyze.resumeBatchSummarizer(res_foler)
+
+      return json.dumps(response)
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex)})
+   finally:
+      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
+   pass
+
+app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, methods=methods)
 
 if __name__ == '__main__':
    port=8080

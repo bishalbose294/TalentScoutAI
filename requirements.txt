@@ -6,4 +6,5 @@ protobuf==3.19.3
 semantic_text_splitter==0.13.1
 sentence_transformers==2.2.2
 simplejson==3.19.1
-yake==0.4.8
+transformers
+streamlit
