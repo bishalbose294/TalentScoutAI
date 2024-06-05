@@ -1,3 +1,6 @@
+
+
+
 document.getElementById('compare-button').addEventListener('click', function() {
     var jdfiles = document.getElementById('jd');
     var resfiles = document.getElementById('resume');
@@ -30,7 +33,7 @@ document.getElementById('compare-button').addEventListener('click', function() {
     formData.append('jdfiles', jdfiles.files[0]);
     formData.append('resfiles', resfiles.files[0]);
 
-    fetch('http://127.0.0.1:8080/calculate_scores', {
+    fetch('http://127.0.0.1:8080/summarize_resume', {
         method: 'POST',
         body: formData
     })

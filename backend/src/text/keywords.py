@@ -12,7 +12,7 @@ class KeyphraseExtractionPipeline(TokenClassificationPipeline):
     def __init__(self,):
         super().__init__(
             model=AutoModelForTokenClassification.from_pretrained(str(embed_config["KEYWORD_EXTRACTOR"])),
-            tokenizer=AutoTokenizer.from_pretrained(embed_config["KEYWORD_EXTRACTOR"])
+            tokenizer=AutoTokenizer.from_pretrained(embed_config["KEYWORD_EXTRACTOR"], device_map = 'cuda')
         )
 
     def postprocess(self, all_outputs):

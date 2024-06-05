@@ -77,7 +77,6 @@ def summarize_resume():
          filePath = os.path.join(res_foler, file.filename)
          file.save(filePath)
       
-
       resumeAnalyze = ResumeAnalyzer()
       response = resumeAnalyze.resumeBatchSummarizer(res_foler)
 
