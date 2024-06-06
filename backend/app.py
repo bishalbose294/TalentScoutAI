@@ -29,6 +29,7 @@ def calculate_scores():
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
       os.makedirs(res_foler)
 
+
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
          filePath = os.path.join(jds_folder, file.filename)

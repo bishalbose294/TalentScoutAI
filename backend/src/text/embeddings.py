@@ -1,7 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from src.text.text_cleaning import TextCleaner
 import configparser
-import torch
 
 config = configparser.ConfigParser()
 config.read("src/configs/config.cfg")
@@ -11,7 +10,6 @@ embed_config = config["EMBEDDINGS"]
 class SentEmbeddings():
     
     def __init__(self) -> None:
-        print(">>>>>>>>>>>>>> CUDA = ",torch.cuda.is_available())
         self.model = SentenceTransformer(embed_config['SENTENCE_TRANSFORMER'], device='cuda')
         pass
 

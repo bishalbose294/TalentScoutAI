@@ -11,6 +11,7 @@ config.read("src/configs/config.cfg")
 candidate_config = config["CANDIDATE"]
 
 pointsThreshold = int(candidate_config["RESUME_MATCH_POINT_THRESHOLD"])
+sectionMatchThreshold = int(candidate_config["SECTION_MATCH_POINT_THRESHOLD"])
 
 class MatchJobCandidate:
 
@@ -34,7 +35,7 @@ class MatchJobCandidate:
         for jdchunkembed in jdchunkEmbeddings:
             for resumechunkembed in jdresumeEmbeddings:
                 value = self.compareMetrics.cos_sim(jdchunkembed,resumechunkembed)
-                if value > 0.5:
+                if value > sectionMatchThreshold:
                     metric.append(1)
         
         return sum(metric)
