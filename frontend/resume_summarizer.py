@@ -1,6 +1,7 @@
 import streamlit as st
 from pathlib import Path
 import requests, shutil
+import pandas as pd
 
 st.title("Talent Scout AI")
 st.subheader("Where Technology meets Talent")
@@ -33,8 +34,9 @@ if submit:
     with st.spinner("Working..."):
         response = requests.post(url=url, files=multiplefiles)
     
-    if response.status_code == 200:
-        st.write(response.json())
-    else:
-        st.write('Error:', response.status_code)
+    resume_summary = response.json()
+
+    df = pd.DataFrame(resume_summary.items(), columns=["Resume", "Summary"],)
+
+    st.markdown(df.style.hide(axis="index").to_html(), unsafe_allow_html=True)
         

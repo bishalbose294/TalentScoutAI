@@ -11,7 +11,7 @@ config.read("src/configs/config.cfg")
 candidate_config = config["CANDIDATE"]
 
 pointsThreshold = int(candidate_config["RESUME_MATCH_POINT_THRESHOLD"])
-sectionMatchThreshold = int(candidate_config["SECTION_MATCH_POINT_THRESHOLD"])
+sectionMatchThreshold = float(candidate_config["SECTION_MATCH_POINT_THRESHOLD"])
 
 class MatchJobCandidate:
 
