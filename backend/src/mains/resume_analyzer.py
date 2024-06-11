@@ -26,7 +26,7 @@ class ResumeAnalyzer:
         self.cleaning = TextCleaner()
         self.embeddings = SentEmbeddings()
         self.compare = CompareMetrics()
-        self.chunk = Chunk(chunksize=1500, overlap=100)
+        self.chunk = Chunk(chunksize=1000, overlap=100)
         self.summarizer = pipeline("summarization", model=resume_summarizer)
         
         pass
@@ -65,18 +65,23 @@ class ResumeAnalyzer:
         return match_jd_res_key
         pass
     
-    def __summarize(self, text):
-        return self.summarizer(text, max_length=maxlength, min_length=minlength, do_sample=False)[0]["summary_text"]
+    # def __summarize(self, text):
+    #     print("Summarizer Called")
+    #     return self.summarizer(text, max_length=maxlength, min_length=minlength, do_sample=False)[0]["summary_text"]
+    #     pass
+
+    def __summarizeBatch(self, textBatch):
+        return self.summarizer(textBatch, max_length=maxlength, min_length=minlength, do_sample=False)
         pass
 
-    def resumeSummarizer(self, resumeFile):
-        resumeChunk_list = self.chunk.chunk(resumeFile)
-        summarize = ""
-        summareized_list = self.__summarize(resumeChunk_list)
-        for summary in summareized_list:
-            summarize += " "+summary["summary_text"]
-        return summarize
-        pass
+    # def resumeSummarizer(self, resumeFile):
+    #     resumeChunk_list = self.chunk.chunk(resumeFile)
+    #     summarize = ""
+    #     summareized_list = self.__summarize(resumeChunk_list)
+    #     for summary in summareized_list:
+    #         summarize += " "+summary["summary_text"]
+    #     return summarize
+    #     pass
 
     def resumeBatchSummarizer(self, resumeFolder):
         resume_list = os.listdir(resumeFolder)
@@ -86,12 +91,14 @@ class ResumeAnalyzer:
         for resumeFile in resume_list:
             file = os.path.join(resumeFolder, resumeFile)
             resumeChunk_list = self.chunk.chunk(file)
+            response = self.__summarizeBatch(resumeChunk_list)
+            print(response)
             summarize = ""
-            for chunkNo in resumeChunk_list:
-                summarize += " "+self.__summarize(chunkNo)
+            for summary in response:
+                summarize += " "+str(summary['summary_text'])
             resumeSummarize[resumeFile] = summarize
 
         return resumeSummarize
         pass
-
+    
     pass
