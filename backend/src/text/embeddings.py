@@ -10,7 +10,7 @@ embed_config = config["EMBEDDINGS"]
 class SentEmbeddings():
     
     def __init__(self) -> None:
-        self.model = SentenceTransformer(embed_config['SENTENCE_TRANSFORMER'], device='cuda')
+        self.model = SentenceTransformer(embed_config['SENTENCE_TRANSFORMER'], trust_remote_code=True, device='cuda')
         pass
 
     def computeEmbedding(self, sentence):

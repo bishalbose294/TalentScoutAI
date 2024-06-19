@@ -4,6 +4,7 @@ from src.utils.compare_metrics import CompareMetrics
 from src.mains.resume_analyzer import ResumeAnalyzer
 from src.text.embeddings import SentEmbeddings
 from src.utils.commonutils import CommonUtils
+from src.text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()
@@ -32,9 +33,9 @@ class MatchJobCandidate:
         jdchunkEmbeddings = self.embedding.computeEmbeddingList(jdChunkList)
         jdresumeEmbeddings = self.embedding.computeEmbeddingList(resumeChunkList)
 
-        for jdchunkembed in jdchunkEmbeddings:
-            for resumechunkembed in jdresumeEmbeddings:
-                value = self.compareMetrics.cos_sim(jdchunkembed,resumechunkembed)
+        for i in range(len(jdchunkEmbeddings)):
+            for j in range(len(jdresumeEmbeddings)):
+                value = self.compareMetrics.cos_sim(jdchunkEmbeddings[i],jdresumeEmbeddings[j])
                 if value > sectionMatchThreshold:
                     metric.append(1)
         
