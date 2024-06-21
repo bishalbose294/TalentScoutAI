@@ -3,11 +3,12 @@ import re, os
 from pdfminer.high_level import extract_text
 import spacy, urllib
 from spacy.matcher import Matcher
-
+from src.utils.commonutils import CommonUtils
 
 class ResumeMetaData():
 
     def __init__(self) -> None:
+        self.utils = CommonUtils()
         pass
 
 
@@ -92,41 +93,42 @@ class ResumeMetaData():
             print(resume)
             meta_data = dict()
             resume_path = os.path.join(resumeFolder, resume)
-            text = resumemetadata.extract_text_from_pdf(resume_path)
+            text = self.extract_text_from_pdf(resume_path)
 
-            name = resumemetadata.extract_name(text)
+            name = self.extract_name(text)
             if name:
                 meta_data["Name"] = name
             else:
                 meta_data["Name"] = ""
 
 
-            contact_number = resumemetadata.extract_contact_number_from_resume(text)
+            contact_number = self.extract_contact_number_from_resume(text)
             if contact_number:
                 meta_data["Contact Number"] = contact_number
             else:
                 meta_data["Contact Number"] = ""
 
 
-            email = resumemetadata.extract_email_from_resume(text)
+            email = self.extract_email_from_resume(text)
             if email:
                 meta_data["Email"] = email
             else:
                 print("Email not found")
 
 
-            extracted_education = resumemetadata.extract_education_from_resume(text)
+            extracted_education = self.extract_education_from_resume(text)
             if extracted_education:
                 meta_data["Education"] = extracted_education
             else:
                 meta_data["Education"] = ""
 
-            extracted_links = resumemetadata.extract_links_extended(text)
+            extracted_links = self.extract_links_extended(text)
             if extracted_education:
                 meta_data["Links"] = extracted_links
             else:
                 meta_data["Links"] = ""
-                    
+            
+
             resume_info[resume] = meta_data
         
         return resume_info
@@ -138,8 +140,8 @@ if __name__ == '__main__':
 
     resumeFolder = "D:/Study Material/Projects/HR Assist/Code/test_data/RESUMES"
 
-    resumemetadata = ResumeMetaData()
-    info = resumemetadata.extractMetaData(resumeFolder)
+    metadata = ResumeMetaData()
+    info = metadata.extractMetaData(resumeFolder)
 
     print(info)
 
