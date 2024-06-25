@@ -2,6 +2,13 @@
 from sentence_transformers import util
 from src.text.embeddings import SentEmbeddings
 from src.text.text_cleaning import TextCleaner
+from typing import List
+from qdrant_client import QdrantClient
+import configparser
+
+config = configparser.ConfigParser()
+config.read("src/configs/config.cfg")
+embed_config = config["EMBEDDINGS"]
 
 class CompareMetrics:
 
@@ -28,5 +35,23 @@ class CompareMetrics:
 
         ## sending only cos_sim as both are same
         return metrics['cos_sim']
+    
+    
+    def get_score(self, resume_string, job_description_string):
+
+        documents: List[str] = [resume_string]
+        client = QdrantClient(":memory:")
+        client.set_model(embed_config['SCORING_EMBED']) 
+
+        client.add(
+            collection_name="demo_collection",
+            documents=documents,
+        )
+
+        search_result = client.query(
+            collection_name="demo_collection", query_text=job_description_string
+        )
+        
+        return search_result
 
     pass

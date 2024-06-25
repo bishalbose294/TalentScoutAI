@@ -7,6 +7,7 @@ from src.utils.commonutils import CommonUtils
 from src.text.text_cleaning import TextCleaner
 import configparser
 
+
 config = configparser.ConfigParser()
 config.read("src/configs/config.cfg")
 candidate_config = config["CANDIDATE"]
@@ -22,6 +23,7 @@ class MatchJobCandidate:
         self.chunk = Chunk()
         self.embedding = SentEmbeddings()
         self.utility = CommonUtils()
+        self.cleaner = TextCleaner()
         pass
 
     def __match(self, jdFile, resumeFile):
@@ -108,6 +110,22 @@ class MatchJobCandidate:
         
         return jd_dict
         pass
+
+    def getJDResumeScore(self, jodDescFolder, resumeFolder):
+        jd_list = os.listdir(jodDescFolder)
+        resume_list = os.listdir(resumeFolder)
+
+        jd_dict = dict()
+        for jd in jd_list:
+            jdText = self.cleaner.clean_text(self.chunk.getTextFromPdf(os.path.join(jodDescFolder, jd)))
+            resume_dict = dict()
+            for resume in resume_list:
+                resumeText = self.cleaner.clean_text(self.chunk.getTextFromPdf(os.path.join(resumeFolder, resume)))
+                results = self.compareMetrics.get_score(resumeText, jdText)
+                resume_dict[resume] = results[0].score
+            jd_dict[jd] = resume_dict
+        
+        return jd_dict
 
     pass
 
