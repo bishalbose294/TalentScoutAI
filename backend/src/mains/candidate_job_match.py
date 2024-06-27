@@ -28,20 +28,20 @@ class MatchJobCandidate:
 
     def __match(self, jdFile, resumeFile):
 
-        metric = []
+        metric = 0
         jdChunkList = self.chunk.chunk(jdFile)
         resumeChunkList = self.chunk.chunk(resumeFile)
 
         jdchunkEmbeddings = self.embedding.computeEmbeddingList(jdChunkList)
         jdresumeEmbeddings = self.embedding.computeEmbeddingList(resumeChunkList)
 
+        total_compare = len(jdchunkEmbeddings) * len(jdresumeEmbeddings)
+
         for i in range(len(jdchunkEmbeddings)):
             for j in range(len(jdresumeEmbeddings)):
-                value = self.compareMetrics.cos_sim(jdchunkEmbeddings[i],jdresumeEmbeddings[j])
-                if value > sectionMatchThreshold:
-                    metric.append(1)
+                metric += self.compareMetrics.cos_sim(jdchunkEmbeddings[i],jdresumeEmbeddings[j])
         
-        return sum(metric)
+        return round((metric*100)/total_compare,2)
         
         pass
 
