@@ -65,23 +65,10 @@ class ResumeAnalyzer:
         return match_jd_res_key
         pass
     
-    # def __summarize(self, text):
-    #     print("Summarizer Called")
-    #     return self.summarizer(text, max_length=maxlength, min_length=minlength, do_sample=False)[0]["summary_text"]
-    #     pass
 
     def __summarizeBatch(self, textBatch):
         return self.summarizer(textBatch, max_length=maxlength, min_length=minlength, do_sample=False)
         pass
-
-    # def resumeSummarizer(self, resumeFile):
-    #     resumeChunk_list = self.chunk.chunk(resumeFile)
-    #     summarize = ""
-    #     summareized_list = self.__summarize(resumeChunk_list)
-    #     for summary in summareized_list:
-    #         summarize += " "+summary["summary_text"]
-    #     return summarize
-    #     pass
 
     def resumeBatchSummarizer(self, resumeFolder):
         resume_list = os.listdir(resumeFolder)

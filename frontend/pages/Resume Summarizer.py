@@ -3,8 +3,6 @@ from pathlib import Path
 import requests, shutil
 import pandas as pd
 
-st.title("Talent Scout AI")
-st.subheader("Where Technology meets Talent")
 
 st.markdown("<h4>Resume Summarizer</h4>", unsafe_allow_html=True)
 

@@ -1,14 +1,16 @@
 
 import re, os
 from pdfminer.high_level import extract_text
-import spacy, urllib
+import spacy
 from spacy.matcher import Matcher
 from src.utils.commonutils import CommonUtils
+from src.mains.resume_analyzer import ResumeAnalyzer
 
 class ResumeMetaData():
 
     def __init__(self) -> None:
         self.utils = CommonUtils()
+        self.analyzer = ResumeAnalyzer()
         pass
 
 
@@ -84,6 +86,10 @@ class ResumeMetaData():
                 links.remove(link)
         return links
     
+
+    def extract_keywords(self, text):
+        return self.analyzer.extractKeywords(text)
+    
     def extractMetaData(self, resumeFolder):
 
         resume_list = os.listdir(resumeFolder)
@@ -94,6 +100,7 @@ class ResumeMetaData():
             meta_data = dict()
             resume_path = os.path.join(resumeFolder, resume)
             text = self.extract_text_from_pdf(resume_path)
+
 
             name = self.extract_name(text)
             if name:
@@ -122,11 +129,19 @@ class ResumeMetaData():
             else:
                 meta_data["Education"] = ""
 
+
             extracted_links = self.extract_links_extended(text)
             if extracted_education:
                 meta_data["Links"] = extracted_links
             else:
                 meta_data["Links"] = ""
+
+
+            extracted_keywords = self.extract_keywords(text)
+            if extracted_keywords:
+                meta_data["Skills"] = extracted_keywords
+            else:
+                meta_data["Skills"] = ""
             
 
             resume_info[resume] = meta_data

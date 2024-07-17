@@ -26,9 +26,6 @@ if not os.path.exists("./uploads"):
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
-st.title("Talent Scout AI")
-st.subheader("Where Technology meets Talent")
-
 st.markdown("<h4>JD Matcher</h4>", unsafe_allow_html=True)
 
 with st.form(key="Form :", clear_on_submit = True):

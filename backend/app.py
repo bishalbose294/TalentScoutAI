@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, jsonify
 from flask_cors import CORS
 import simplejson as json
-import os, pathlib, time, traceback
+import os, time, traceback
 import shutil
 from src.mains.candidate_job_match import MatchJobCandidate
 from src.mains.resume_analyzer import ResumeAnalyzer
