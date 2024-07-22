@@ -60,7 +60,7 @@ def calculate_scores():
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
       print(traceback.format_exc())
-      return jsonify({"error": str(ex)})
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
       shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
    
@@ -86,7 +86,7 @@ def summarize_resume():
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
       print(traceback.format_exc())
-      return jsonify({"error": str(ex)})
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
       shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
    pass
