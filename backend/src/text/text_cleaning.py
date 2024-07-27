@@ -1,4 +1,5 @@
 import re
+import nltk
 from nltk.stem import WordNetLemmatizer
 from src.utils.commonutils import CommonUtils
 
