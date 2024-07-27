@@ -11,3 +11,4 @@ gevent
 python-dateutil
 qdrant-client
 einops
+flask-ngrok

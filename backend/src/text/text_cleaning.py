@@ -2,6 +2,9 @@ import re
 from nltk.stem import WordNetLemmatizer
 from src.utils.commonutils import CommonUtils
 
+nltk.data.path.append('/code/nltk')
+nltk.download('wordnet', download_dir="/code/nltk")
+
 class TextCleaner:
 
     def __init__(self) -> None:

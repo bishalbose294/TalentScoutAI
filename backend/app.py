@@ -5,9 +5,14 @@ import os, time, traceback
 import shutil
 from src.mains.candidate_job_match import MatchJobCandidate
 from src.mains.resume_analyzer import ResumeAnalyzer
+from flask_ngrok import run_with_ngrok
+
+
+os.environ['NGROK_AUTHTOKEN'] = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
 
 app = Flask(__name__)
 CORS(app=app)
+run_with_ngrok(app)
 
 cwd = os.getcwd()
 app.config["ALLOWED_EXTENSIONS"] = [".pdf"]
