@@ -5,21 +5,27 @@ import os, time, traceback
 import shutil
 from src.mains.candidate_job_match import MatchJobCandidate
 from src.mains.resume_analyzer import ResumeAnalyzer
+from src.mains.resume_metadata import ResumeMetaData
 from flask_ngrok import run_with_ngrok
+from pyngrok import ngrok
+from gevent.pywsgi import WSGIServer
 
 
 os.environ['NGROK_AUTHTOKEN'] = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
+os.environ['CUDA_LAUNCH_BLOCKING']="1"
+os.environ['TORCH_USE_CUDA_DSA'] = "1"
+
 
 app = Flask(__name__)
 CORS(app=app)
-run_with_ngrok(app)
+
 
 cwd = os.getcwd()
 app.config["ALLOWED_EXTENSIONS"] = [".pdf"]
 app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024 # 25 MB
 app.config["UPLOAD_FOLDER"] = os.path.join(cwd, "uploads")
 
-methods = ['GET','POST']
+methods = ['POST']
 
 def home():
    return render_template('index.html')
@@ -98,7 +104,42 @@ def summarize_resume():
 
 app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, methods=methods)
 
+def extract_resume_metadata():
+   try:
+      timestr = time.strftime("%Y%m%d_%H%M%S")
+      
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
+      os.makedirs(res_foler)
+      
+      resumefiles = request.files.getlist("resfiles")
+      for file in resumefiles:
+         filePath = os.path.join(res_foler, file.filename)
+         file.save(filePath)
+      
+      metadata = ResumeMetaData()
+      response = metadata.extractMetaData(res_foler)
+
+      return json.dumps(response)
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
+   pass
+
+app.add_url_rule("/extract_resume_metadata", 'extract_resume_metadata', extract_resume_metadata, methods=methods)
+
+
 if __name__ == '__main__':
-   port=8080
-   host="127.0.0.1"
-   app.run(host=host,port=port,debug=False)
+   print("Getting things started !!")
+   app.run()
+   # run_with_ngrok(app)
+   # port=5000
+   # ngrok_key = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
+   # ngrok.set_auth_token(ngrok_key)
+   # ngrok.connect(port).public_url
+   # http_server = WSGIServer(("0.0.0.0", port), app)
+   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   # http_server.serve_forever()
