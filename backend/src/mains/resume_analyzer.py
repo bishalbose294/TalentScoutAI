@@ -8,7 +8,7 @@ from transformers import pipeline
 
 
 config = configparser.ConfigParser()
-config.read("src/configs/config.cfg")
+config.read("TalentScoutAI/backend/src/configs/config.cfg")
 analyzer_config = config["ANALYZER"]
 
 topKey = float(analyzer_config["TOP_KEYWORDS"])

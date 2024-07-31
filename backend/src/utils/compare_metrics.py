@@ -7,7 +7,7 @@ from qdrant_client import QdrantClient
 import configparser
 
 config = configparser.ConfigParser()
-config.read("src/configs/config.cfg")
+config.read("TalentScoutAI/backend/src/configs/config.cfg")
 embed_config = config["EMBEDDINGS"]
 
 class CompareMetrics:
