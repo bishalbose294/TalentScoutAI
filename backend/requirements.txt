@@ -12,3 +12,4 @@ python-dateutil
 qdrant-client
 einops
 flask-ngrok
+pdfminer.six
