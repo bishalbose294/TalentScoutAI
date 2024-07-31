@@ -2,8 +2,8 @@ import re, os
 from pdfminer.high_level import extract_text
 import spacy
 from spacy.matcher import Matcher
-from src.utils.commonutils import CommonUtils
-from src.mains.resume_analyzer import ResumeAnalyzer
+from TalentScoutAI.backend.src.utils.commonutils import CommonUtils
+from TalentScoutAI.backend.src.mains.resume_analyzer import ResumeAnalyzer
 
 class ResumeMetaData():
 

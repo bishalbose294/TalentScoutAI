@@ -1,7 +1,7 @@
 
 from sentence_transformers import util
-from src.text.embeddings import SentEmbeddings
-from src.text.text_cleaning import TextCleaner
+from TalentScoutAI.backend.src.text.embeddings import SentEmbeddings
+from TalentScoutAI.backend.src.text.text_cleaning import TextCleaner
 from typing import List
 from qdrant_client import QdrantClient
 import configparser

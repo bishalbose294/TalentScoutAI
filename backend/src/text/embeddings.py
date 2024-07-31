@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-from src.text.text_cleaning import TextCleaner
+from TalentScoutAI.backend.src.text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()

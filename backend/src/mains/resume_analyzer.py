@@ -1,9 +1,9 @@
-from src.text.text_cleaning import TextCleaner
-from src.text.embeddings import SentEmbeddings
-from src.utils.compare_metrics import CompareMetrics
+from TalentScoutAI.backend.src.text.text_cleaning import TextCleaner
+from TalentScoutAI.backend.src.text.embeddings import SentEmbeddings
+from TalentScoutAI.backend.src.utils.compare_metrics import CompareMetrics
 import configparser, os
-from src.text.keywords import KeyphraseExtractionPipeline
-from src.text.chunking import Chunk
+from TalentScoutAI.backend.src.text.keywords import KeyphraseExtractionPipeline
+from TalentScoutAI.backend.src.text.chunking import Chunk
 from transformers import pipeline
 
 
