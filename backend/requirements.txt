@@ -13,3 +13,5 @@ qdrant-client
 einops
 flask-ngrok
 pdfminer.six
+bcrypt
+mysql-connector-python

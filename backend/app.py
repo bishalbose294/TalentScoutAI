@@ -6,6 +6,7 @@ import shutil
 from TalentScoutAI.backend.src.mains.candidate_job_match import MatchJobCandidate
 from TalentScoutAI.backend.src.mains.resume_analyzer import ResumeAnalyzer
 from TalentScoutAI.backend.src.mains.resume_metadata import ResumeMetaData
+from TalentScoutAI.backend.src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
 from gevent.pywsgi import WSGIServer
@@ -130,6 +131,47 @@ def extract_resume_metadata():
    pass
 
 app.add_url_rule("/extract_resume_metadata", 'extract_resume_metadata', extract_resume_metadata, methods=methods)
+
+def login():
+   try:
+      email = request.get_json()['email']
+      password = request.get_json()['password']
+      
+      login = LoginClass()
+      result = login.userLogin(email, password)
+
+      return json.dumps({"msg": result})
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/login", 'login', login, methods=methods)
+
+def register():
+   try:
+      email = request.get_json()['email']
+      password = request.get_json()['password']
+      
+      login = LoginClass()
+      result = login.userRegister(email, password)
+
+      return json.dumps({"msg": result})
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/register", 'register', login, methods=methods)
+
 
 
 if __name__ == '__main__':
