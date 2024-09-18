@@ -15,3 +15,7 @@ flask-ngrok
 pdfminer.six
 bcrypt
 mysql-connector-python
+"pymongo[srv]"
+pyngrok
+pymongo
+dnspython

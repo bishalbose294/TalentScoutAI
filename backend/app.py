@@ -10,6 +10,8 @@ from TalentScoutAI.backend.src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
 from gevent.pywsgi import WSGIServer
+import warnings
+warnings.filterwarnings("ignore")
 
 
 os.environ['NGROK_AUTHTOKEN'] = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"

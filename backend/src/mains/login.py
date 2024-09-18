@@ -8,8 +8,8 @@ class LoginClass:
         pass
 
     def userLogin(self, email, password):
-        query = f"select count(*) from user_creds where email_id='{email}' and password='{password}'"
-        result = self.dbconnect.getData(query)
+        data = {"email": email, "password": password}
+        result = self.dbconnect.getOne(data)
         if result:
             return "Success"
         else:
@@ -17,9 +17,8 @@ class LoginClass:
         pass
 
     def userRegister(self, email, password):
-        query = f"insert into user_creds (email_id, password) VALUES (%s, %s)"
-        values = (email, password)
-        result = self.dbconnect.insertData(query, values)
+        data = {"email": email, "password": password}
+        result = self.dbconnect.insertOne(data)
         if result:
             return "Success"
         else:
