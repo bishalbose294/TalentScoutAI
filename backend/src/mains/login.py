@@ -1,10 +1,16 @@
 from TalentScoutAI.backend.src.utils.database import DBConnector
+import configparser
+
+config = configparser.ConfigParser()
+config.read("TalentScoutAI/backend/src/configs/config.cfg")
+db_config = config["DB"]
 
 
 class LoginClass:
 
     def __init__(self,) -> None:
-        self.dbconnect = DBConnector()
+        collectioName = db_config["LOGINCOLLECTION"]
+        self.dbconnect = DBConnector(collectioName)
         pass
 
     def userLogin(self, email, password):

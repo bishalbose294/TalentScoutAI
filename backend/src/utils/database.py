@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import pymongo
 import configparser
 
 config = configparser.ConfigParser()
@@ -8,13 +9,15 @@ db_config = config["DB"]
 
 class DBConnector:
 
-    def __init__(self) -> None:
+    def __init__(self, collectioName) -> None:
+        self.collectionName = collectioName
         pass
 
     def createConnection(self,):
         self.pyMongoClient = MongoClient(db_config["CONNECTIONSTRING"], server_api=ServerApi("1"))
         self.db = self.pyMongoClient[db_config["DATABASE"]]
-        self.collection = self.db[db_config["LOGINCOLLECTION"]]
+        self.collection = self.db.get_collection(self.collectionName)
+        self.collection.create_index({'email': 1},{'unique': True})
         pass
 
     def closeConection(self,):
