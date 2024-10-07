@@ -1,6 +1,4 @@
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-import pymongo
+import psycopg2
 import configparser
 
 config = configparser.ConfigParser()
@@ -9,47 +7,46 @@ db_config = config["DB"]
 
 class DBConnector:
 
-    def __init__(self, collectioName) -> None:
-        self.collectionName = collectioName
+    def __init__(self) -> None:
         pass
 
     def createConnection(self,):
-        self.pyMongoClient = MongoClient(db_config["CONNECTIONSTRING"], server_api=ServerApi("1"))
-        self.db = self.pyMongoClient[db_config["DATABASE"]]
-        self.collection = self.db.get_collection(self.collectionName)
-        self.collection.create_index({'email': 1},{'unique': True})
+        self.connection = psycopg2.connect(database=db_config["DBNAME"], user=db_config["USER"], password=db_config["PASSWORD"], host=db_config["HOST"], port=db_config["PORT"])
+        self.schema = db_config["SCHEMA"]
+        self.cursor = self.connection.cursor()
         pass
 
     def closeConection(self,):
-        self.pyMongoClient.close()
+        self.cursor.close()
+        self.connection.close()
         pass
 
-    def insertOne(self, data):
+    def insertOne(self, sql, values):
         self.createConnection()
-        insertedData = self.collection.insert_one(data)
+        insertedData = self.cursor.execute(sql, (values,))
         self.closeConection()
-        return insertedData.inserted_id
+        return insertedData
         pass
 
-    def insertMany(self, data):
+    def insertMany(self, sql, valueList):
         self.createConnection()
-        insertedData = self.collection.insert_many(data)
+        insertedData = self.cursor.execute(sql, valueList)
         self.closeConection()
-        return insertedData.inserted_id
+        return insertedData
         pass
 
-    def deleteOne(self, data):
+    def deleteOne(self, sql, values):
         self.createConnection()
-        deletedData = self.collection.delete_one(data)
+        deletedData = self.cursor.execute(sql, (values,))
         self.closeConection()
-        return deletedData.deleted_count
+        return deletedData
         pass
 
-    def deleteMany(self, data):
+    def deleteMany(self, sql, valueList):
         self.createConnection()
-        deletedData = self.collection.delete_many(data)
+        deletedData = self.cursor.execute(sql, valueList)
         self.closeConection()
-        return deletedData.deleted_count
+        return deletedData
         pass
 
     def getOne(self, data):
@@ -66,11 +63,11 @@ class DBConnector:
         return result
         pass
 
-    def updateOne(self, search, update):
+    def updateOne(self, sql, updateValue, searchValue):
         self.createConnection()
-        updatedData = self.collection.update_one(search, update)
+        updatedData = self.cursor.execute(sql, (updateValue, searchValue))
         self.closeConection()
-        return updatedData.modified_count
+        return updatedData
 
     def updateMany(self, search, update):
         self.createConnection()
