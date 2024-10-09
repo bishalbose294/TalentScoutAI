@@ -3,7 +3,7 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read("TalentScoutAI/backend/src/configs/config.cfg")
-db_config = config["DB"]
+db_config = config["DATABASE"]
 
 class DBConnector:
 
@@ -17,62 +17,37 @@ class DBConnector:
         pass
 
     def closeConection(self,):
+        self.connection.commit()
         self.cursor.close()
         self.connection.close()
         pass
 
-    def insertOne(self, sql, values):
+    def insert(self, sql, valueList):
         self.createConnection()
-        insertedData = self.cursor.execute(sql, (values,))
+        insertedData = self.cursor.executemany(sql, valueList)
         self.closeConection()
         return insertedData
         pass
 
-    def insertMany(self, sql, valueList):
+    def delete(self, sql, values):
         self.createConnection()
-        insertedData = self.cursor.execute(sql, valueList)
-        self.closeConection()
-        return insertedData
-        pass
-
-    def deleteOne(self, sql, values):
-        self.createConnection()
-        deletedData = self.cursor.execute(sql, (values,))
+        deletedData = self.cursor.execute(sql, values)
         self.closeConection()
         return deletedData
         pass
 
-    def deleteMany(self, sql, valueList):
+    def select(self, sql, values):
         self.createConnection()
-        deletedData = self.cursor.execute(sql, valueList)
-        self.closeConection()
-        return deletedData
-        pass
-
-    def getOne(self, data):
-        self.createConnection()
-        result = self.collection.find_one(data)
+        self.cursor.execute(sql, values)
+        result = self.cursor.fetchall()
         self.closeConection()
         return result
         pass
 
-    def getMany(self, data):
+    def update(self, sql, values):
         self.createConnection()
-        result = self.collection.find(data)
-        self.closeConection()
-        return result
-        pass
-
-    def updateOne(self, sql, updateValue, searchValue):
-        self.createConnection()
-        updatedData = self.cursor.execute(sql, (updateValue, searchValue))
+        updatedData = self.cursor.execute(sql, values)
         self.closeConection()
         return updatedData
-
-    def updateMany(self, search, update):
-        self.createConnection()
-        updatedData = self.collection.update_many(search, update)
-        self.closeConection()
-        return updatedData.modified_count
 
     pass

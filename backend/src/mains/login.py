@@ -3,19 +3,21 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read("TalentScoutAI/backend/src/configs/config.cfg")
-db_config = config["DB"]
+db_config = config["DATABASE"]
+schema = db_config["SCHEMA"]
+table = db_config["LOGINTABLE"]
 
 
 class LoginClass:
 
     def __init__(self,) -> None:
-        collectioName = db_config["LOGINCOLLECTION"]
-        self.dbconnect = DBConnector(collectioName)
+        self.dbconnect = DBConnector()
         pass
 
     def userLogin(self, email, password):
-        data = {"email": email, "password": password}
-        result = self.dbconnect.getOne(data)
+        sql = f"""select * from {schema}.{table} where "emailId"=%s and "password"=%s """
+        values = (email, password,)
+        result = self.dbconnect.select(sql, values)
         if result:
             return "Success"
         else:
@@ -23,12 +25,12 @@ class LoginClass:
         pass
 
     def userRegister(self, email, password):
-        data = {"email": email, "password": password}
-        result = self.dbconnect.insertOne(data)
-        if result:
-            return "Success"
-        else:
-            return "Failure"
+        sql = f"""insert into {schema}.{table} values (%s,%s)"""
+        values = [
+                (email,password),
+        ]
+        result = self.dbconnect.insert(sql, values)
+        return "Success"
         pass
 
     def userLogout(self,):
