@@ -33,7 +33,7 @@ class LoginClass:
         return "Success"
         pass
 
-    def userLogout(self,):
+    def userLogout(self, email,):
         pass
 
     pass

@@ -154,6 +154,26 @@ def login():
 
 app.add_url_rule("/login", 'login', login, methods=methods)
 
+
+def logout():
+   try:
+      email = request.get_json()['email']
+      
+      login = LoginClass()
+      result = login.userLogout(email)
+
+      return json.dumps({"msg": result})
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/logout", 'logout', logout, methods=methods)
+
 def register():
    try:
       email = request.get_json()['email']
