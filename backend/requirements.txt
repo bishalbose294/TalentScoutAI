@@ -18,3 +18,4 @@ mysql-connector-python
 pyngrok
 psycopg2
 dnspython
+db-sqlite3

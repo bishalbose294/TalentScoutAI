@@ -15,9 +15,8 @@ class LoginClass:
         pass
 
     def userLogin(self, email, password):
-        sql = f"""select * from {schema}.{table} where "emailId"=%s and "password"=%s """
-        values = (email, password,)
-        result = self.dbconnect.select(sql, values)
+        sql = f"""select * from {schema}.{table} where email='{email}' and password='{password}' """
+        result = self.dbconnect.select(sql)
         if result:
             return "Success"
         else:
@@ -25,11 +24,8 @@ class LoginClass:
         pass
 
     def userRegister(self, email, password):
-        sql = f"""insert into {schema}.{table} values (%s,%s)"""
-        values = [
-                (email,password),
-        ]
-        result = self.dbconnect.insert(sql, values)
+        sql = f"""insert into {schema}.{table} values ('{email}','{password}')"""
+        result = self.dbconnect.insert(sql)
         return "Success"
         pass
 
