@@ -26,7 +26,7 @@ CORS(app=app)
 cwd = os.getcwd()
 app.config["ALLOWED_EXTENSIONS"] = [".pdf"]
 app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024 # 25 MB
-app.config["UPLOAD_FOLDER"] = os.path.join(cwd, "uploads")
+app.config["UPLOAD_FOLDER"] = os.path.join(cwd, "src/data")
 
 methods = ['POST']
 
