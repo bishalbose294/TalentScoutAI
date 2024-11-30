@@ -9,29 +9,26 @@ db_file = db_config['DBNAME']
 class DBConnector:
 
     def __init__(self) -> None:
-        try:
-            self.createConnection()
+        table_list = []
+        self.createConnection()
+        
+        table_list.append(f""" CREATE TABLE if not exists {db_config["LOGINTABLE"]} (
+                    email VARCHAR(255) PRIMARY KEY,
+                    password VARCHAR(255) NOT NULL
+                ); """)
 
-            # Creating table
-            table = f""" CREATE TABLE {db_config["LOGINTABLE"]} (
-                        email VARCHAR(255) PRIMARY KEY,
-                        password VARCHAR(255) NOT NULL
-                    ); """
-            
-            self.cursor.execute(table)
+        table_list.append(f""" CREATE TABLE if not exists {db_config["CREDITTABLE"]} (
+                    email VARCHAR(255) PRIMARY KEY,
+                    credits FLOAT NOT NULL
+                ); """)
+        
+        for table in table_list:
+            try:
+                self.cursor.execute(table)
+            except Exception as ex:
+                print(ex)
 
-            # Creating table
-            table = f""" CREATE TABLE {db_config["CREDITTABLE"]} (
-                        email VARCHAR(255) PRIMARY KEY,
-                        credits FLOAT NOT NULL
-                    ); """
-            
-            self.cursor.execute(table)
-
-            self.closeConection()
-        except Exception as ex:
-            print(ex)
-            pass
+        self.closeConection()
         pass
 
     def createConnection(self,):
@@ -43,6 +40,10 @@ class DBConnector:
         self.connection.commit()
         self.cursor.close()
         self.connection.close()
+        pass
+
+    def checkIfTableExists(self, table_name):
+        sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'"
         pass
 
     def insert(self, sql):
