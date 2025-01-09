@@ -6,6 +6,7 @@ import shutil
 from TalentScoutAI.backend.src.mains.candidate_job_match import MatchJobCandidate
 from TalentScoutAI.backend.src.mains.resume_analyzer import ResumeAnalyzer
 from TalentScoutAI.backend.src.mains.resume_metadata import ResumeMetaData
+from TalentScoutAI.backend.src.utils.upload_files import UploadFiles
 from TalentScoutAI.backend.src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
@@ -43,15 +44,21 @@ def calculate_scores():
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
       os.makedirs(res_foler)
 
+      email = request.get_json()['email']
+
+      fileUpload = UploadFiles()
+
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
          filePath = os.path.join(jds_folder, file.filename)
          file.save(filePath)
+         fileUpload.uploadFile(filePath, email)
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
          filePath = os.path.join(res_foler, file.filename)
          file.save(filePath)
+         fileUpload.uploadFile(filePath, email)
       
       match = MatchJobCandidate()
       pointers = match.generatePointers(jds_folder, res_foler)
