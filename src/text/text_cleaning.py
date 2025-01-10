@@ -1,7 +1,7 @@
 import re
 import nltk
 from nltk.stem import WordNetLemmatizer
-from TalentScoutAI.backend.src.utils.commonutils import CommonUtils
+from TalentScoutAI.src.utils.commonutils import CommonUtils
 
 nltk.download('wordnet')
 

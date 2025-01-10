@@ -1,10 +1,10 @@
 import os
-from TalentScoutAI.backend.src.text.chunking import Chunk
-from TalentScoutAI.backend.src.utils.compare_metrics import CompareMetrics
-from TalentScoutAI.backend.src.mains.resume_analyzer import ResumeAnalyzer
-from TalentScoutAI.backend.src.text.embeddings import SentEmbeddings
-from TalentScoutAI.backend.src.utils.commonutils import CommonUtils
-from TalentScoutAI.backend.src.text.text_cleaning import TextCleaner
+from TalentScoutAI.src.text.chunking import Chunk
+from TalentScoutAI.src.utils.compare_metrics import CompareMetrics
+from TalentScoutAI.src.mains.resume_analyzer import ResumeAnalyzer
+from TalentScoutAI.src.text.embeddings import SentEmbeddings
+from TalentScoutAI.src.utils.commonutils import CommonUtils
+from TalentScoutAI.src.text.text_cleaning import TextCleaner
 import configparser
 
 

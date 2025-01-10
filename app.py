@@ -3,11 +3,11 @@ from flask_cors import CORS
 import simplejson as json
 import os, time, traceback
 import shutil
-from TalentScoutAI.backend.src.mains.candidate_job_match import MatchJobCandidate
-from TalentScoutAI.backend.src.mains.resume_analyzer import ResumeAnalyzer
-from TalentScoutAI.backend.src.mains.resume_metadata import ResumeMetaData
-from TalentScoutAI.backend.src.utils.upload_files import UploadFiles
-from TalentScoutAI.backend.src.mains.login import LoginClass
+from TalentScoutAI.src.mains.candidate_job_match import MatchJobCandidate
+from TalentScoutAI.src.mains.resume_analyzer import ResumeAnalyzer
+from TalentScoutAI.src.mains.resume_metadata import ResumeMetaData
+from TalentScoutAI.src.utils.upload_files import UploadFiles
+from TalentScoutAI.src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
 from gevent.pywsgi import WSGIServer

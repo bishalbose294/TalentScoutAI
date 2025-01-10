@@ -1,4 +1,4 @@
-from TalentScoutAI.backend.src.utils.database import DBConnector
+from TalentScoutAI.src.utils.database import DBConnector
 
 
 class UploadFiles:
