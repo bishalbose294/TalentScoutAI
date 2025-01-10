@@ -8,12 +8,12 @@ class CommonUtils:
         pass
 
     def loadStropwords(self,):
-        with open(os.path.join("TalentScoutAI/backend/src", "configs", "stopwords.txt"), "r") as g:
+        with open(os.path.join("TalentScoutAI", "configs", "stopwords.txt"), "r") as g:
             stopwords = g.read().splitlines()
         return stopwords
 
     def loadAbbreviations(self,):
-        with open(os.path.join("TalentScoutAI/backend/src", "configs", "abbr.json"), "r") as json_file:
+        with open(os.path.join("TalentScoutAI", "configs", "abbr.json"), "r") as json_file:
             data = json.load(json_file)
         return data
     

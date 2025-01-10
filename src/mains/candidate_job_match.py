@@ -9,7 +9,7 @@ import configparser
 
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/backend/src/configs/config.cfg")
+config.read("TalentScoutAI/configs/config.cfg")
 candidate_config = config["CANDIDATE"]
 
 pointsThreshold = int(candidate_config["RESUME_MATCH_POINT_THRESHOLD"])

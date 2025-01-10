@@ -1,4 +1,4 @@
 *env/
 *pycache*/
-src/data/jd/*
-src/data/resume/*
+data/jd/*
+data/resume/*

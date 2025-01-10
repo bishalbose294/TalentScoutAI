@@ -3,7 +3,7 @@ from TalentScoutAI.src.text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/backend/src/configs/config.cfg")
+config.read("TalentScoutAI/configs/config.cfg")
 embed_config = config["EMBEDDINGS"]
 
 

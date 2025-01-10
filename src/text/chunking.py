@@ -3,7 +3,7 @@ from semantic_text_splitter import TextSplitter
 import configparser
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/backend/src/configs/config.cfg")
+config.read("TalentScoutAI/configs/config.cfg")
 chunk_config = config["CHUNKING"]
 
 
