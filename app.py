@@ -12,6 +12,13 @@ from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
 from gevent.pywsgi import WSGIServer
 import warnings
+import configparser
+
+config = configparser.ConfigParser()
+config.read("configs/config.cfg")
+api_config = config["API"]
+
+
 warnings.filterwarnings("ignore")
 
 
@@ -305,10 +312,11 @@ if __name__ == '__main__':
    print("Getting things started !!")
    # app.run()
    run_with_ngrok(app)
-   port=5000
-   ngrok_key = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
+   host = api_config['HOST']
+   port = int(api_config['PORT'])
+   ngrok_key = api_config['NGROK_KEY']
    ngrok.set_auth_token(ngrok_key)
    ngrok.connect(port).public_url
-   http_server = WSGIServer(("0.0.0.0", port), app)
+   http_server = WSGIServer((host, port), app)
    print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
    http_server.serve_forever()
