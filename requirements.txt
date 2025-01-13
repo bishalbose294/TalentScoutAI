@@ -6,14 +6,11 @@ Flask_Cors==4.0.0
 Flask==2.3.2
 flask-ngrok
 gevent
-huggingface_hub==0.25.0
 Jinja2
-lightning==2.0.1
 MarkupSafe
 mysql-connector-python
 nltk==3.8.1
 pdfminer.six
-protobuf==3.19.3
 pymupdf
 pyngrok
 python-dateutil
@@ -23,3 +20,6 @@ sentence_transformers==2.2.2
 simplejson==3.19.1
 transformers
 Werkzeug
+protobuf==3.19.3
+lightning==2.0.1
+huggingface_hub==0.25.0
