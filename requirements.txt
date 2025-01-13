@@ -6,6 +6,7 @@ Flask_Cors==4.0.0
 Flask==2.3.2
 flask-ngrok
 gevent
+huggingface_hub==0.25.0
 Jinja2
 lightning==2.0.1
 MarkupSafe
