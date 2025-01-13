@@ -51,7 +51,7 @@ def calculate_scores():
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
       os.makedirs(res_foler)
 
-      email = request.get_json()['email']
+      email = request.form['email']
 
       fileUpload = FileManagement()
 
@@ -95,6 +95,9 @@ app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, meth
 
 def summarize_resume():
    try:
+
+      email = request.form['email']
+
       timestr = time.strftime("%Y%m%d_%H%M%S")
       
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
@@ -122,6 +125,9 @@ app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, meth
 
 def extract_resume_metadata():
    try:
+
+      email = request.form['email']
+
       timestr = time.strftime("%Y%m%d_%H%M%S")
       
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
@@ -210,7 +216,7 @@ app.add_url_rule("/register", 'register', register, methods=methods)
 
 def upload_files():
    try:
-      email = request.get_json()['email']
+      email = request.form['email']
 
       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
       os.makedirs(jds_folder)
