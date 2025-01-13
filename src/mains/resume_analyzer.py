@@ -1,14 +1,14 @@
-from TalentScoutAI.src.text.text_cleaning import TextCleaner
-from TalentScoutAI.src.text.embeddings import SentEmbeddings
-from TalentScoutAI.src.utils.compare_metrics import CompareMetrics
+from src.text.text_cleaning import TextCleaner
+from src.text.embeddings import SentEmbeddings
+from src.utils.compare_metrics import CompareMetrics
 import configparser, os
-from TalentScoutAI.src.text.keywords import KeyphraseExtractionPipeline
-from TalentScoutAI.src.text.chunking import Chunk
+from src.text.keywords import KeyphraseExtractionPipeline
+from src.text.chunking import Chunk
 from transformers import pipeline
 
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/configs/config.cfg")
+config.read("configs/config.cfg")
 analyzer_config = config["ANALYZER"]
 
 topKey = float(analyzer_config["TOP_KEYWORDS"])

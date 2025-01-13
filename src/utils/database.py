@@ -2,7 +2,7 @@ import sqlite3
 import configparser
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/configs/config.cfg")
+config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 db_file = db_config['DBNAME']
 
@@ -20,6 +20,13 @@ class DBConnector:
         table_list.append(f""" CREATE TABLE if not exists {db_config["CREDITTABLE"]} (
                     email VARCHAR(255) PRIMARY KEY,
                     credits FLOAT NOT NULL
+                ); """)
+        
+        table_list.append(f""" CREATE TABLE if not exists {db_config["FILETABLE"]} (
+                    fileId varchar(255) PRIMARY KEY,
+                    email VARCHAR(255),
+                    fileName VARCHAR(255),
+                    timestamp TIMESTAMP
                 ); """)
         
         for table in table_list:

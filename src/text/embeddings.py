@@ -1,9 +1,9 @@
 from sentence_transformers import SentenceTransformer
-from TalentScoutAI.src.text.text_cleaning import TextCleaner
+from src.text.text_cleaning import TextCleaner
 import configparser
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/configs/config.cfg")
+config.read("configs/config.cfg")
 embed_config = config["EMBEDDINGS"]
 
 

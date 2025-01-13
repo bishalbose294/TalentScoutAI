@@ -19,3 +19,4 @@ pyngrok
 psycopg2
 dnspython
 db-sqlite3
+lightning==2.0.1

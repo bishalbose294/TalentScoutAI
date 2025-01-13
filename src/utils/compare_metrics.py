@@ -1,13 +1,13 @@
 
 from sentence_transformers import util
-from TalentScoutAI.src.text.embeddings import SentEmbeddings
-from TalentScoutAI.src.text.text_cleaning import TextCleaner
+from src.text.embeddings import SentEmbeddings
+from src.text.text_cleaning import TextCleaner
 from typing import List
 from qdrant_client import QdrantClient
 import configparser
 
 config = configparser.ConfigParser()
-config.read("TalentScoutAI/configs/config.cfg")
+config.read("configs/config.cfg")
 embed_config = config["EMBEDDINGS"]
 
 class CompareMetrics:

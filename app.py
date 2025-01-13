@@ -1,13 +1,13 @@
-from flask import Flask, redirect, url_for, render_template, request, jsonify
+from flask import Flask, redirect, url_for, render_template, request, jsonify, send_file
 from flask_cors import CORS
 import simplejson as json
 import os, time, traceback
 import shutil
-from TalentScoutAI.src.mains.candidate_job_match import MatchJobCandidate
-from TalentScoutAI.src.mains.resume_analyzer import ResumeAnalyzer
-from TalentScoutAI.src.mains.resume_metadata import ResumeMetaData
-from TalentScoutAI.src.utils.upload_files import UploadFiles
-from TalentScoutAI.src.mains.login import LoginClass
+from src.mains.candidate_job_match import MatchJobCandidate
+from src.mains.resume_analyzer import ResumeAnalyzer
+from src.mains.resume_metadata import ResumeMetaData
+from src.utils.upload_files import FileManagement
+from src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
 from gevent.pywsgi import WSGIServer
@@ -46,19 +46,19 @@ def calculate_scores():
 
       email = request.get_json()['email']
 
-      fileUpload = UploadFiles()
+      fileUpload = FileManagement()
 
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
          filePath = os.path.join(jds_folder, file.filename)
          file.save(filePath)
-         fileUpload.uploadFile(filePath, email)
+         fileUpload.uploadFile(file.filename, email)
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
          filePath = os.path.join(res_foler, file.filename)
          file.save(filePath)
-         fileUpload.uploadFile(filePath, email)
+         fileUpload.uploadFile(file.filename, email)
       
       match = MatchJobCandidate()
       pointers = match.generatePointers(jds_folder, res_foler)
@@ -198,18 +198,117 @@ def register():
       pass
    pass
 
-app.add_url_rule("/register", 'register', login, methods=methods)
+app.add_url_rule("/register", 'register', register, methods=methods)
 
 
+def upload_files():
+   try:
+      email = request.get_json()['email']
+
+      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+      os.makedirs(jds_folder)
+
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+      os.makedirs(res_foler)
+      
+      fileMgmt = FileManagement()
+
+      jdfiles = request.files.getlist("jdfiles")
+      for file in jdfiles:
+         filePath = os.path.join(jds_folder, file.filename)
+         file.save(filePath)
+         fileMgmt.uploadFile(file.filename, email)
+
+      resumefiles = request.files.getlist("resfiles")
+      for file in resumefiles:
+         filePath = os.path.join(res_foler, file.filename)
+         file.save(filePath)
+         fileMgmt.uploadFile(file.filename, email)
+
+      return json.dumps({"msg": "Files uploaded Successfully"})
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/upload_files", 'upload_files', upload_files, methods=methods)
+
+
+def delete_files():
+   try:
+      email = request.get_json()['email']
+      fileId_list = request.get_json()['fileId_list']
+      fileName_list = request.get_json()['fileId_list']
+      
+      fileMgmt = FileManagement()
+
+      filePathList = []
+      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+      for fileName in fileName_list:
+         filePathList.append(os.path.join(jds_folder, fileName))
+
+      fileMgmt.deleteFiles(fileId_list, filePathList)
+
+      return json.dumps({"msg": "Files Deleted Successfully"})
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/delete_files", 'delete_files', delete_files, methods=methods)
+
+
+def get_file_list():
+   try:
+      email = request.get_json()['email']
+      fileMgmt = FileManagement()
+
+      fileList = fileMgmt.getFileMetaList(email)
+
+      return json.dumps({"Files": fileList})
+
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      pass
+   pass
+
+app.add_url_rule("/get_file_list", 'get_file_list', get_file_list, methods=methods)
+
+
+def download_file():
+   email = request.get_json()['email']
+   fileType = request.get_json()['fileType']
+   fileName = request.get_json()['fileName']
+
+   folder = None
+   if fileType.lower() == 'jd':
+      folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+   
+   if fileType.lower() == 'resume':
+      folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+   
+   
+   return send_file(os.path.join(folder, fileName))
+
+app.add_url_rule("/download_file", 'download_file', download_file, methods=methods)
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   app.run()
-   # run_with_ngrok(app)
-   # port=5000
-   # ngrok_key = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
-   # ngrok.set_auth_token(ngrok_key)
-   # ngrok.connect(port).public_url
-   # http_server = WSGIServer(("0.0.0.0", port), app)
-   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   # http_server.serve_forever()
+   # app.run()
+   run_with_ngrok(app)
+   port=5000
+   ngrok_key = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
+   ngrok.set_auth_token(ngrok_key)
+   ngrok.connect(port).public_url
+   http_server = WSGIServer(("0.0.0.0", port), app)
+   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   http_server.serve_forever()
