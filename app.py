@@ -335,6 +335,6 @@ if __name__ == '__main__':
    ngrok_key = api_config['NGROK_KEY']
    ngrok.set_auth_token(ngrok_key)
    print(ngrok.connect(port).public_url)
-   http_server = WSGIServer((host, port), app)
+   http_server = WSGIServer((host, port), app, spawn=10)
    print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
    http_server.serve_forever()
