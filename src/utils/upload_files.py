@@ -48,10 +48,11 @@ class FileManagement:
         return "Successfully Deleted"
         pass
 
-    def downloadFile(self, fileId):
-        sql = f""" select fileName from {schema}.{table} where fileId = '{fileId}' """
+    def downloadFile(self, email, folderPath, fileId):
+        sql = f""" select fileType, fileName from {schema}.{table} where fileId = '{fileId}' and email = '{email}' """
         result = self.db.select(sql)
-        return result
+        return os.path.join(folderPath, result[0][0], result[0][1])
+
         pass
 
     def getFileMetaList(self, email):

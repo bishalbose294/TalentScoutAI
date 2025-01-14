@@ -316,30 +316,25 @@ app.add_url_rule("/get_file_list", 'get_file_list', get_file_list, methods=metho
 
 def download_file():
    email = request.get_json()['email']
-   fileType = request.get_json()['fileType']
-   fileName = request.get_json()['fileName']
+   fileId = request.get_json()['fileId']
 
-   folder = None
-   if fileType.lower() == 'jd':
-      folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+   fileMgmt = FileManagement()
+   folderPath = os.path.join(app.config["UPLOAD_FOLDER"],email)
+   filePath = fileMgmt.downloadFile(email, folderPath, fileId)
    
-   if fileType.lower() == 'resume':
-      folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
-   
-   
-   return send_file(os.path.join(folder, fileName))
+   return send_file(filePath)
 
 app.add_url_rule("/download_file", 'download_file', download_file, methods=methods)
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   app.run()
-   # run_with_ngrok(app)
-   # host = api_config['HOST']
-   # port = int(api_config['PORT'])
-   # ngrok_key = api_config['NGROK_KEY']
-   # ngrok.set_auth_token(ngrok_key)
-   # print(ngrok.connect(port).public_url)
-   # http_server = WSGIServer((host, port), app)
-   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   # http_server.serve_forever()
+   # app.run()
+   run_with_ngrok(app)
+   host = api_config['HOST']
+   port = int(api_config['PORT'])
+   ngrok_key = api_config['NGROK_KEY']
+   ngrok.set_auth_token(ngrok_key)
+   print(ngrok.connect(port).public_url)
+   http_server = WSGIServer((host, port), app)
+   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   http_server.serve_forever()
