@@ -57,15 +57,17 @@ def calculate_scores():
 
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
-         filePath = os.path.join(jds_folder, file.filename)
-         file.save(filePath)
-         fileUpload.uploadFile(file.filename, email)
+         if file.filename:
+            filePath = os.path.join(jds_folder, file.filename)
+            file.save(filePath)
+            fileUpload.uploadFile(file.filename, email, "jds")
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
-         fileUpload.uploadFile(file.filename, email)
+         if file.filename:
+            filePath = os.path.join(res_foler, file.filename)
+            file.save(filePath)
+            fileUpload.uploadFile(file.filename, email, "resumes")
       
       match = MatchJobCandidate()
       pointers = match.generatePointers(jds_folder, res_foler)
@@ -105,8 +107,9 @@ def summarize_resume():
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
+         if file.filename:
+            filePath = os.path.join(res_foler, file.filename)
+            file.save(filePath)
       
       resumeAnalyze = ResumeAnalyzer()
       response = resumeAnalyze.resumeBatchSummarizer(res_foler)
@@ -135,8 +138,9 @@ def extract_resume_metadata():
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
+         if file.filename:
+            filePath = os.path.join(res_foler, file.filename)
+            file.save(filePath)
       
       metadata = ResumeMetaData()
       response = metadata.extractMetaData(res_foler)
@@ -219,24 +223,30 @@ def upload_files():
       email = request.form['email']
 
       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
-      os.makedirs(jds_folder)
+
+      if not os.path.exists(jds_folder):
+         os.makedirs(jds_folder)
 
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
-      os.makedirs(res_foler)
+      
+      if not os.path.exists(res_foler):
+         os.makedirs(res_foler)
       
       fileMgmt = FileManagement()
 
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
-         filePath = os.path.join(jds_folder, file.filename)
-         file.save(filePath)
-         fileMgmt.uploadFile(file.filename, email)
+         if file.filename:
+            filePath = os.path.join(jds_folder, file.filename)
+            file.save(filePath)
+            fileMgmt.uploadFile(file.filename, email, "jds")
 
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
-         fileMgmt.uploadFile(file.filename, email)
+         if file.filename:
+            filePath = os.path.join(res_foler, file.filename)
+            file.save(filePath)
+            fileMgmt.uploadFile(file.filename, email, "resumes")
 
       return json.dumps({"msg": "Files uploaded Successfully"})
    except Exception as ex:
@@ -254,18 +264,25 @@ def delete_files():
    try:
       email = request.get_json()['email']
       fileId_list = request.get_json()['fileId_list']
-      fileName_list = request.get_json()['fileId_list']
       
       fileMgmt = FileManagement()
 
-      filePathList = []
-      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
-      for fileName in fileName_list:
-         filePathList.append(os.path.join(jds_folder, fileName))
+      folderPath = os.path.join(app.config["UPLOAD_FOLDER"],email)
 
-      fileMgmt.deleteFiles(fileId_list, filePathList)
+      result = fileMgmt.deleteFiles(email, folderPath, fileId_list)
 
-      return json.dumps({"msg": "Files Deleted Successfully"})
+      folders = list(os.walk(app.config["UPLOAD_FOLDER"]))[1:]
+
+      for folder in folders:
+         if not folder[2]:
+            os.chmod(folder[0], 0o777)
+            try:
+               os.rmdir(folder[0])
+            except Exception as ex:
+               print(ex)
+               pass
+
+      return json.dumps({"msg": result})
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
       print(traceback.format_exc())
@@ -316,13 +333,13 @@ app.add_url_rule("/download_file", 'download_file', download_file, methods=metho
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   # app.run()
-   run_with_ngrok(app)
-   host = api_config['HOST']
-   port = int(api_config['PORT'])
-   ngrok_key = api_config['NGROK_KEY']
-   ngrok.set_auth_token(ngrok_key)
-   print(ngrok.connect(port).public_url)
-   http_server = WSGIServer((host, port), app)
-   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   http_server.serve_forever()
+   app.run()
+   # run_with_ngrok(app)
+   # host = api_config['HOST']
+   # port = int(api_config['PORT'])
+   # ngrok_key = api_config['NGROK_KEY']
+   # ngrok.set_auth_token(ngrok_key)
+   # print(ngrok.connect(port).public_url)
+   # http_server = WSGIServer((host, port), app)
+   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   # http_server.serve_forever()

@@ -26,6 +26,7 @@ class DBConnector:
                     fileId varchar(255) PRIMARY KEY,
                     email VARCHAR(255),
                     fileName VARCHAR(255),
+                    fileType VARCHAR(100),
                     timestamp TIMESTAMP
                 ); """)
         

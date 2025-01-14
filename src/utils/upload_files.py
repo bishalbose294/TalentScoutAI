@@ -15,23 +15,16 @@ class FileManagement:
         self.db = DBConnector()
         pass
 
-    def uploadFile(self, fileName, email):
+    def uploadFile(self, fileName, email, fileType):
         fileId = str(uuid.uuid4())
         timestamp = datetime.now()
-        sql = f"""insert into {schema}.{table} values ('{fileId}','{email}','{fileName}','{timestamp}')"""
+        sql = f"""insert into {schema}.{table} values ('{fileId}','{email}','{fileName}','{fileType}','{timestamp}')"""
         result = self.db.insert(sql)
         return "Success"
         pass
 
 
-    def deleteFiles(self, fileIdList, filePathList):
-        
-        for filePath in filePathList:
-            if os.path.exists(filePath):
-                os.remove(filePath)
-            else:
-                return "The file does not exist"
-            pass
+    def deleteFiles(self, email, folderPath, fileIdList):
         
         search_condition = ""
         for i in range(len(fileIdList)):
@@ -40,21 +33,37 @@ class FileManagement:
             else:
                 search_condition += f"'{fileIdList[i]}' , "
 
-        sql = f""" delete from {schema}.{table} where fileId IN in {search_condition})"""
-        result = self.db.delete(sql)
-        return "Success"
+        sql = f""" select fileType, fileName from {schema}.{table} where email = '{email}' and fileId IN ({search_condition}) """
+        results = self.db.select(sql)
+
+        for result in results:
+            filePath = os.path.join(folderPath, result[0], result[1])
+            if os.path.exists(filePath):
+                os.remove(filePath)
+            else:
+                print(f"{filePath} file does not exist")
+
+        sql = f""" delete from {schema}.{table} where fileId IN ({search_condition}) """
+        self.db.delete(sql)
+        return "Successfully Deleted"
         pass
 
     def downloadFile(self, fileId):
-        sql = f""" select fileName from {schema}.{table} where fileId = {fileId}"""
+        sql = f""" select fileName from {schema}.{table} where fileId = '{fileId}' """
         result = self.db.select(sql)
         return result
         pass
 
     def getFileMetaList(self, email):
-        sql = f""" select * from {schema}.{table} where email = {email}"""
-        result = self.db.select(sql)
-        return result
+        sql = f""" select fileId, fileName, fileType from {schema}.{table} where email = '{email}' """
+        results = self.db.select(sql)
+        fileDict = dict()
+        for result in results:
+            fileId = result[0]
+            filename = result[1]
+            fileType = result[2]
+            fileDict[fileId] = {"filename": filename, "fileType": fileType}
+        return fileDict
         pass
 
     pass
