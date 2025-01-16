@@ -21,8 +21,6 @@ api_config = config["API"]
 
 warnings.filterwarnings("ignore")
 
-
-os.environ['NGROK_AUTHTOKEN'] = "2jnVep6aB6LQiMXbLG9n05OqZ2R_2xPZMPXSpQc695dD9f36B"
 os.environ['CUDA_LAUNCH_BLOCKING']="1"
 os.environ['TORCH_USE_CUDA_DSA'] = "1"
 
