@@ -1,13 +1,15 @@
 from src.utils.database import DBConnector
 import configparser, uuid, os
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import dateutil.relativedelta as relativedelta
 
 config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
 table = db_config['FILETABLE']
+upload_capacity = int(db_config['UPLOADCAPACITY'])
+expiration_days = int(db_config['EXPIRATIONDAYS'])
 
 class FileManagement:
 
@@ -52,7 +54,6 @@ class FileManagement:
         sql = f""" select fileType, fileName from {schema}.{table} where fileId = '{fileId}' and email = '{email}' """
         result = self.db.select(sql)
         return os.path.join(folderPath, result[0][0], result[0][1])
-
         pass
 
     def getFileMetaList(self, email):
@@ -65,6 +66,44 @@ class FileManagement:
             fileType = result[2]
             fileDict[fileId] = {"filename": filename, "fileType": fileType}
         return fileDict
+        pass
+
+    def ifFileUploadable(self, folder):
+        if os.listdir(folder).count() >= upload_capacity:
+            return False
+        return True
+        pass
+
+    def emptyFolder(self, folders):
+
+        criticalTime = (datetime.now() - relativedelta.relativedelta(days=expiration_days)).timestamp()
+
+        print(criticalTime)
+
+        for folder in folders:
+         if not folder[2]:
+            os.chmod(folder[0], 0o777)
+            try:
+               os.rmdir(folder[0])
+            except Exception as ex:
+               print(ex)
+               pass
+        
+         else:
+             for file in folder[2]:
+                filePath = os.path.join(folder[0],file)
+                item_time = os.stat(filePath).st_ctime
+                if item_time < criticalTime:
+                    os.remove(filePath)
+
+        d = datetime.now() - relativedelta.relativedelta(days=expiration_days)
+        sql = f""" select fileType, fileName from {schema}.{table} where timestamp < {d} """
+
+        result = self.db.select(sql)
+
+        print(result)
+
+
         pass
 
     pass

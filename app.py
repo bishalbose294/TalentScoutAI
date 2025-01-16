@@ -38,22 +38,33 @@ app.config["UPLOAD_FOLDER"] = os.path.join(cwd, "data")
 
 methods = ['POST']
 
-def home():
-   return render_template('index.html')
-
-app.add_url_rule('/', 'home', home, methods=methods)
+def cleanFolder():
+   fileMgmt = FileManagement()
+   folders = list(os.walk(app.config["UPLOAD_FOLDER"]))[1:]
+   fileMgmt.emptyFolder(folders)
+   pass
 
 def calculate_scores():
    try:
-      timestr = time.strftime("%Y%m%d_%H%M%S")
-      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"jds")
-      os.makedirs(jds_folder)
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
-      os.makedirs(res_foler)
+
+      fileUpload = FileManagement()
 
       email = request.form['email']
 
-      fileUpload = FileManagement()
+      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+
+      if not os.path.exists(jds_folder):
+         os.makedirs(jds_folder)
+      elif not fileUpload.ifFileUploadable(jds_folder):
+         return json.dumps({"msg": "You already have 5 Job Descriptions uploaded. Please delete existing files."})
+
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+      
+      if not os.path.exists(res_foler):
+         os.makedirs(res_foler)
+      elif not fileUpload.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
+
 
       jdfiles = request.files.getlist("jdfiles")
       for file in jdfiles:
@@ -91,19 +102,24 @@ def calculate_scores():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
-      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
+      cleanFolder()
+      pass
    
 app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, methods=methods)
 
 def summarize_resume():
    try:
 
+      fileUpload = FileManagement()
+
       email = request.form['email']
 
-      timestr = time.strftime("%Y%m%d_%H%M%S")
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
       
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
-      os.makedirs(res_foler)
+      if not os.path.exists(res_foler):
+         os.makedirs(res_foler)
+      elif not fileUpload.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
@@ -121,7 +137,8 @@ def summarize_resume():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
-      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
+      cleanFolder()
+      pass
    pass
 
 app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, methods=methods)
@@ -129,12 +146,16 @@ app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, meth
 def extract_resume_metadata():
    try:
 
+      fileUpload = FileManagement()
+
       email = request.form['email']
 
-      timestr = time.strftime("%Y%m%d_%H%M%S")
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
       
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],timestr,"resumes")
-      os.makedirs(res_foler)
+      if not os.path.exists(res_foler):
+         os.makedirs(res_foler)
+      elif not fileUpload.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
@@ -152,7 +173,8 @@ def extract_resume_metadata():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
-      shutil.rmtree(os.path.join(app.config["UPLOAD_FOLDER"],timestr), ignore_errors=False,)
+      cleanFolder()
+      pass
    pass
 
 app.add_url_rule("/extract_resume_metadata", 'extract_resume_metadata', extract_resume_metadata, methods=methods)
@@ -172,6 +194,7 @@ def login():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -192,6 +215,7 @@ def logout():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -212,6 +236,7 @@ def register():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -254,6 +279,7 @@ def upload_files():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -273,14 +299,7 @@ def delete_files():
 
       folders = list(os.walk(app.config["UPLOAD_FOLDER"]))[1:]
 
-      for folder in folders:
-         if not folder[2]:
-            os.chmod(folder[0], 0o777)
-            try:
-               os.rmdir(folder[0])
-            except Exception as ex:
-               print(ex)
-               pass
+      fileMgmt.emptyFolder(folders)
 
       return json.dumps({"msg": result})
    except Exception as ex:
@@ -288,6 +307,7 @@ def delete_files():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -308,6 +328,7 @@ def get_file_list():
       print(traceback.format_exc())
       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
    finally:
+      cleanFolder()
       pass
    pass
 
@@ -328,13 +349,13 @@ app.add_url_rule("/download_file", 'download_file', download_file, methods=metho
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   # app.run()
-   run_with_ngrok(app)
-   host = api_config['HOST']
-   port = int(api_config['PORT'])
-   ngrok_key = api_config['NGROK_KEY']
-   ngrok.set_auth_token(ngrok_key)
-   print(ngrok.connect(port).public_url)
-   http_server = WSGIServer((host, port), app, spawn=10)
-   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   http_server.serve_forever()
+   app.run()
+   # run_with_ngrok(app)
+   # host = api_config['HOST']
+   # port = int(api_config['PORT'])
+   # ngrok_key = api_config['NGROK_KEY']
+   # ngrok.set_auth_token(ngrok_key)
+   # print(ngrok.connect(port).public_url)
+   # http_server = WSGIServer((host, port), app, spawn=10)
+   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   # http_server.serve_forever()

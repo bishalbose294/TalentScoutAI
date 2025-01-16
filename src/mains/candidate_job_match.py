@@ -128,10 +128,3 @@ class MatchJobCandidate:
         return jd_dict
 
     pass
-
-if __name__ == "__main__":
-    match = MatchJobCandidate()
-    jodDescFolder = "D:/Study Material/HR Assist/Code/Talent-Scout-AI/test_data/JDS"
-    resumeFolder = "D:/Study Material/HR Assist/Code/Talent-Scout-AI/test_data/RESUMES"
-    match.run(jodDescFolder, resumeFolder)
-    pass

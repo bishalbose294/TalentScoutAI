@@ -148,15 +148,3 @@ class ResumeMetaData():
         return resume_info
 
     pass
-
-
-if __name__ == '__main__':
-
-    resumeFolder = "D:/Study Material/Projects/HR Assist/Code/test_data/RESUMES"
-
-    metadata = ResumeMetaData()
-    info = metadata.extractMetaData(resumeFolder)
-
-    print(info)
-
-    pass
