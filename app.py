@@ -349,13 +349,13 @@ app.add_url_rule("/download_file", 'download_file', download_file, methods=metho
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   app.run()
-   # run_with_ngrok(app)
-   # host = api_config['HOST']
-   # port = int(api_config['PORT'])
-   # ngrok_key = api_config['NGROK_KEY']
-   # ngrok.set_auth_token(ngrok_key)
-   # print(ngrok.connect(port).public_url)
-   # http_server = WSGIServer((host, port), app, spawn=10)
-   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   # http_server.serve_forever()
+   # app.run()
+   run_with_ngrok(app)
+   host = api_config['HOST']
+   port = int(api_config['PORT'])
+   ngrok_key = api_config['NGROK_KEY']
+   ngrok.set_auth_token(ngrok_key)
+   print(ngrok.connect(port).public_url)
+   http_server = WSGIServer((host, port), app, spawn=10)
+   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   http_server.serve_forever()
