@@ -7,7 +7,8 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
-table = db_config['FILETABLE']
+fileTable = db_config['FILETABLE']
+processedResumeTable = db_config['PROCESSEDRESUME']
 upload_capacity = int(db_config['UPLOADCAPACITY'])
 expiration_days = int(db_config['EXPIRATIONDAYS'])
 
@@ -20,9 +21,9 @@ class FileManagement:
     def uploadFile(self, fileName, email, fileType):
         fileId = str(uuid.uuid4())
         timestamp = datetime.now()
-        sql = f"""insert into {schema}.{table} values ('{fileId}','{email}','{fileName}','{fileType}','{timestamp}')"""
+        sql = f"""insert into {schema}.{fileTable} values ('{fileId}','{email}','{fileName}','{fileType}','{timestamp}')"""
         result = self.db.insert(sql)
-        return "Success"
+        return fileId
         pass
 
 
@@ -35,7 +36,7 @@ class FileManagement:
             else:
                 search_condition += f"'{fileIdList[i]}' , "
 
-        sql = f""" select fileType, fileName from {schema}.{table} where email = '{email}' and fileId IN ({search_condition}) """
+        sql = f""" select fileType, fileName from {schema}.{fileTable} where email = '{email}' and fileId IN ({search_condition}) """
         results = self.db.select(sql)
 
         for result in results:
@@ -45,26 +46,30 @@ class FileManagement:
             else:
                 print(f"{filePath} file does not exist")
 
-        sql = f""" delete from {schema}.{table} where fileId IN ({search_condition}) """
+        sql = f""" delete from {schema}.{fileTable} where fileId IN ({search_condition}) """
         self.db.delete(sql)
         return "Successfully Deleted"
         pass
 
     def downloadFile(self, email, folderPath, fileId):
-        sql = f""" select fileType, fileName from {schema}.{table} where fileId = '{fileId}' and email = '{email}' """
+        sql = f""" select fileType, fileName from {schema}.{fileTable} where fileId = '{fileId}' and email = '{email}' """
         result = self.db.select(sql)
         return os.path.join(folderPath, result[0][0], result[0][1])
         pass
 
     def getFileMetaList(self, email):
-        sql = f""" select fileId, fileName, fileType from {schema}.{table} where email = '{email}' """
+        sql = f""" select fileId, fileName, fileType from {schema}.{fileTable} where email = '{email}' """
         results = self.db.select(sql)
         fileDict = dict()
         for result in results:
             fileId = result[0]
             filename = result[1]
             fileType = result[2]
-            fileDict[fileId] = {"filename": filename, "fileType": fileType}
+
+            sql = f""" select summarization, meta_data from {schema}.{processedResumeTable} where fileId = '{fileId}' """
+            results = self.db.select(sql)
+
+            fileDict[fileId] = {"filename": filename, "fileType": fileType, "summary": results[0][0], "meta_data": results[0][1]}
         return fileDict
         pass
 
@@ -97,7 +102,7 @@ class FileManagement:
                     os.remove(filePath)
 
         d = datetime.now() - relativedelta.relativedelta(days=expiration_days)
-        sql = f""" select fileType, fileName from {schema}.{table} where timestamp < {d} """
+        sql = f""" select fileType, fileName from {schema}.{fileTable} where timestamp < {d} """
 
         result = self.db.select(sql)
 

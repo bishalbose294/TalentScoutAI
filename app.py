@@ -18,6 +18,7 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 api_config = config["API"]
 
+db_config = config['DATABASE']
 
 warnings.filterwarnings("ignore")
 
@@ -54,14 +55,14 @@ def calculate_scores():
       if not os.path.exists(jds_folder):
          os.makedirs(jds_folder)
       elif not fileUpload.ifFileUploadable(jds_folder):
-         return json.dumps({"msg": "You already have 5 Job Descriptions uploaded. Please delete existing files."})
+         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
 
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
       
       if not os.path.exists(res_foler):
          os.makedirs(res_foler)
       elif not fileUpload.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
+         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
 
 
       jdfiles = request.files.getlist("jdfiles")
@@ -69,7 +70,7 @@ def calculate_scores():
          if file.filename:
             filePath = os.path.join(jds_folder, file.filename)
             file.save(filePath)
-            fileUpload.uploadFile(file.filename, email, "jds")
+            fileId = fileUpload.uploadFile(file.filename, email, "jds")
       
       resumefiles = request.files.getlist("resfiles")
       for file in resumefiles:
@@ -108,7 +109,7 @@ app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, meth
 def summarize_resume():
    try:
 
-      fileUpload = FileManagement()
+      fileMgmt = FileManagement()
 
       email = request.form['email']
 
@@ -116,17 +117,22 @@ def summarize_resume():
       
       if not os.path.exists(res_foler):
          os.makedirs(res_foler)
-      elif not fileUpload.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
+      elif not fileMgmt.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
       
       resumefiles = request.files.getlist("resfiles")
-      for file in resumefiles:
-         if file.filename:
-            filePath = os.path.join(res_foler, file.filename)
-            file.save(filePath)
+      if len(resumefiles) > 1:
+         return json.dumps({"msg": "Please upload only 1 file"})
+      
+      file=resumefiles[0]
+      if file.filename:
+         filePath = os.path.join(res_foler, file.filename)
+         file.save(filePath)
+
+      fileId = fileMgmt.uploadFile(file.filename, email, "resumes")
       
       resumeAnalyze = ResumeAnalyzer()
-      response = resumeAnalyze.resumeBatchSummarizer(res_foler)
+      response = resumeAnalyze.resumeSummarizer(filePath, fileId)
 
       return json.dumps(response)
    
@@ -144,7 +150,7 @@ app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, meth
 def extract_resume_metadata():
    try:
 
-      fileUpload = FileManagement()
+      fileMgmt = FileManagement()
 
       email = request.form['email']
 
@@ -152,17 +158,22 @@ def extract_resume_metadata():
       
       if not os.path.exists(res_foler):
          os.makedirs(res_foler)
-      elif not fileUpload.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You already have 5 Resumes uploaded. Please delete existing files."})
+      elif not fileMgmt.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
       
       resumefiles = request.files.getlist("resfiles")
-      for file in resumefiles:
-         if file.filename:
-            filePath = os.path.join(res_foler, file.filename)
-            file.save(filePath)
+      if len(resumefiles) > 1:
+         return json.dumps({"msg": "Please upload only 1 file"})
+      
+      file=resumefiles[0]
+      if file.filename:
+         filePath = os.path.join(res_foler, file.filename)
+         file.save(filePath)
+      
+      fileId = fileMgmt.uploadFile(file.filename, email, "resumes")
       
       metadata = ResumeMetaData()
-      response = metadata.extractMetaData(res_foler)
+      response = metadata.extractMetaData(filePath, fileId)
 
       return json.dumps(response)
    
@@ -347,13 +358,13 @@ app.add_url_rule("/download_file", 'download_file', download_file, methods=metho
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   # app.run()
-   run_with_ngrok(app)
-   host = api_config['HOST']
-   port = int(api_config['PORT'])
-   ngrok_key = api_config['NGROK_KEY']
-   ngrok.set_auth_token(ngrok_key)
-   print(ngrok.connect(port).public_url)
-   http_server = WSGIServer((host, port), app, spawn=10)
-   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   http_server.serve_forever()
+   app.run()
+   # run_with_ngrok(app)
+   # host = api_config['HOST']
+   # port = int(api_config['PORT'])
+   # ngrok_key = api_config['NGROK_KEY']
+   # ngrok.set_auth_token(ngrok_key)
+   # print(ngrok.connect(port).public_url)
+   # http_server = WSGIServer((host, port), app, spawn=10)
+   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   # http_server.serve_forever()

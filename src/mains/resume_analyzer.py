@@ -11,6 +11,10 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 analyzer_config = config["ANALYZER"]
 
+db_config = config["DATABASE"]
+schema = db_config["SCHEMA"]
+table = db_config['FILETABLE']
+
 topKey = float(analyzer_config["TOP_KEYWORDS"])
 maxGram = float(analyzer_config["MAX_KEYWORDS_SIZE"])
 matchThreshold = float(analyzer_config["KEYWORD_MATCH_THRESHOLD"])
@@ -86,6 +90,22 @@ class ResumeAnalyzer:
             resumeSummarize[resumeFile] = summarize
 
         return resumeSummarize
+        pass
+
+    def resumeSummarizer(self, resumePath, fileId):
+
+        resumeChunk_list = self.chunk.chunk(resumePath)
+        response = self.__summarizeBatch(resumeChunk_list)
+        print(response)
+        summarize = ""
+        for summary in response:
+            summarize += " "+str(summary['summary_text'])
+
+        sql = f""" update {schema}.{table} SET summarization = {summarize} WHERE fileId='{fileId}' """
+
+        self.db.update(sql)
+
+        return summarize
         pass
     
     pass

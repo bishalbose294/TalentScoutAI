@@ -1,15 +1,24 @@
-import re, os
+import re, os, configparser
 from pdfminer.high_level import extract_text
 import spacy
 from spacy.matcher import Matcher
 from src.utils.commonutils import CommonUtils
 from src.mains.resume_analyzer import ResumeAnalyzer
+from src.utils.database import DBConnector
+
+
+config = configparser.ConfigParser()
+config.read("configs/config.cfg")
+db_config = config["DATABASE"]
+schema = db_config["SCHEMA"]
+table = db_config['FILETABLE']
 
 class ResumeMetaData():
 
     def __init__(self) -> None:
         self.utils = CommonUtils()
         self.analyzer = ResumeAnalyzer()
+        self.db = DBConnector()
         pass
 
 
@@ -89,7 +98,60 @@ class ResumeMetaData():
     def extract_keywords(self, text):
         return self.analyzer.extractKeywords(text)
     
-    def extractMetaData(self, resumeFolder):
+    def extractMetaData(self, resumePath, fileId):
+
+        resume_info = dict()
+        text = self.extract_text_from_pdf(resumePath)
+
+        name = self.extract_name(text)
+        if name:
+            resume_info["Name"] = name
+        else:
+            resume_info["Name"] = ""
+
+
+        contact_number = self.extract_contact_number_from_resume(text)
+        if contact_number:
+            resume_info["Contact Number"] = contact_number
+        else:
+            resume_info["Contact Number"] = ""
+
+
+        email = self.extract_email_from_resume(text)
+        if email:
+            resume_info["Email"] = email
+        else:
+            print("Email not found")
+
+
+        extracted_education = self.extract_education_from_resume(text)
+        if extracted_education:
+            resume_info["Education"] = extracted_education
+        else:
+            resume_info["Education"] = ""
+
+
+        extracted_links = self.extract_links_extended(text)
+        if extracted_education:
+            resume_info["Links"] = extracted_links
+        else:
+            resume_info["Links"] = ""
+
+
+        extracted_keywords = self.extract_keywords(text)
+        if extracted_keywords:
+            resume_info["Skills"] = extracted_keywords
+        else:
+            resume_info["Skills"] = ""
+        
+
+        sql = f""" update {schema}.{table} SET meta_data = {resume_info} WHERE fileId='{fileId}' """
+
+        self.db.update(sql)
+        
+        return resume_info
+    
+    def extractMetaData_fromFolder(self, resumeFolder):
 
         resume_list = os.listdir(resumeFolder)
         resume_info = dict()

@@ -30,6 +30,13 @@ class DBConnector:
                     timestamp TIMESTAMP
                 ); """)
         
+        table_list.append(f""" CREATE TABLE if not exists {db_config["PROCESSEDRESUME"]} (
+                    fileId VARCHAR(255) PRIMARY KEY,
+                    summarization VARCHAR,
+                    meta_data VARCHAR,
+                    timestamp TIMESTAMP
+                ); """)
+        
         for table in table_list:
             try:
                 self.cursor.execute(table)
