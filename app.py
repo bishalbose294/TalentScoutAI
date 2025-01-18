@@ -252,47 +252,47 @@ def register():
 app.add_url_rule("/register", 'register', register, methods=methods)
 
 
-def upload_files():
-   try:
-      email = request.form['email']
+# def upload_files():
+#    try:
+#       email = request.form['email']
 
-      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+#       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
 
-      if not os.path.exists(jds_folder):
-         os.makedirs(jds_folder)
+#       if not os.path.exists(jds_folder):
+#          os.makedirs(jds_folder)
 
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+#       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
       
-      if not os.path.exists(res_foler):
-         os.makedirs(res_foler)
+#       if not os.path.exists(res_foler):
+#          os.makedirs(res_foler)
       
-      fileMgmt = FileManagement()
+#       fileMgmt = FileManagement()
 
-      jdfiles = request.files.getlist("jdfiles")
-      for file in jdfiles:
-         if file.filename:
-            filePath = os.path.join(jds_folder, file.filename)
-            file.save(filePath)
-            fileMgmt.uploadFile(file.filename, email, "jds")
+#       jdfiles = request.files.getlist("jdfiles")
+#       for file in jdfiles:
+#          if file.filename:
+#             filePath = os.path.join(jds_folder, file.filename)
+#             file.save(filePath)
+#             fileMgmt.uploadFile(file.filename, email, "jds")
 
-      resumefiles = request.files.getlist("resfiles")
-      for file in resumefiles:
-         if file.filename:
-            filePath = os.path.join(res_foler, file.filename)
-            file.save(filePath)
-            fileMgmt.uploadFile(file.filename, email, "resumes")
+#       resumefiles = request.files.getlist("resfiles")
+#       for file in resumefiles:
+#          if file.filename:
+#             filePath = os.path.join(res_foler, file.filename)
+#             file.save(filePath)
+#             fileMgmt.uploadFile(file.filename, email, "resumes")
 
-      return json.dumps({"msg": "Files uploaded Successfully"})
-   except Exception as ex:
-      print("Exception: ",ex.with_traceback)
-      print(traceback.format_exc())
-      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
-   finally:
-      cleanFolder()
-      pass
-   pass
+#       return json.dumps({"msg": "Files uploaded Successfully"})
+#    except Exception as ex:
+#       print("Exception: ",ex.with_traceback)
+#       print(traceback.format_exc())
+#       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+#    finally:
+#       cleanFolder()
+#       pass
+#    pass
 
-app.add_url_rule("/upload_files", 'upload_files', upload_files, methods=methods)
+# app.add_url_rule("/upload_files", 'upload_files', upload_files, methods=methods)
 
 
 def delete_files():
@@ -358,13 +358,13 @@ app.add_url_rule("/download_file", 'download_file', download_file, methods=metho
 
 if __name__ == '__main__':
    print("Getting things started !!")
-   app.run()
-   # run_with_ngrok(app)
-   # host = api_config['HOST']
-   # port = int(api_config['PORT'])
-   # ngrok_key = api_config['NGROK_KEY']
-   # ngrok.set_auth_token(ngrok_key)
-   # print(ngrok.connect(port).public_url)
-   # http_server = WSGIServer((host, port), app, spawn=10)
-   # print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
-   # http_server.serve_forever()
+   # app.run()
+   run_with_ngrok(app)
+   host = api_config['HOST']
+   port = int(api_config['PORT'])
+   ngrok_key = api_config['NGROK_KEY']
+   ngrok.set_auth_token(ngrok_key)
+   print(ngrok.connect(port).public_url)
+   http_server = WSGIServer((host, port), app, spawn=10)
+   print("~~~~~~~~~~~~~~~~~~~ Starting Server ~~~~~~~~~~~~~~~~~~~")
+   http_server.serve_forever()
