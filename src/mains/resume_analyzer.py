@@ -5,6 +5,7 @@ import configparser, os
 from src.text.keywords import KeyphraseExtractionPipeline
 from src.text.chunking import Chunk
 from transformers import pipeline
+from src.utils.database import DBConnector
 
 
 config = configparser.ConfigParser()
@@ -32,6 +33,7 @@ class ResumeAnalyzer:
         self.compare = CompareMetrics()
         self.chunk = Chunk(chunksize=1000, overlap=100)
         self.summarizer = pipeline("summarization", model=resume_summarizer)
+        self.db = DBConnector()
         
         pass
 
