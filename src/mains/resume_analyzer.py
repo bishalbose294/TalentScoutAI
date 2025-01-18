@@ -103,7 +103,9 @@ class ResumeAnalyzer:
         for summary in response:
             summarize += " "+str(summary['summary_text'])
 
-        sql = f""" update {schema}.{table} SET summarization = {summarize} WHERE fileId='{fileId}' """
+        sql = f""" update {schema}.{table} SET summarization = '{summarize}' WHERE fileId='{fileId}' """
+
+        print(sql)
 
         self.db.update(sql)
 
