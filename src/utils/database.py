@@ -32,8 +32,7 @@ class DBConnector:
         
         table_list.append(f""" CREATE TABLE if not exists {db_config["PROCESSEDRESUME"]} (
                     fileId VARCHAR(255) PRIMARY KEY,
-                    summarization VARCHAR,
-                    meta_data VARCHAR,
+                    summary VARCHAR,
                     timestamp TIMESTAMP
                 ); """)
         

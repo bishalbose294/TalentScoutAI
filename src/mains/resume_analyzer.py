@@ -6,6 +6,7 @@ from src.text.keywords import KeyphraseExtractionPipeline
 from src.text.chunking import Chunk
 from transformers import pipeline
 from src.utils.database import DBConnector
+from datetime import datetime
 
 
 config = configparser.ConfigParser()
@@ -14,7 +15,7 @@ analyzer_config = config["ANALYZER"]
 
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
-table = db_config['FILETABLE']
+table = db_config['PROCESSEDRESUME']
 
 topKey = float(analyzer_config["TOP_KEYWORDS"])
 maxGram = float(analyzer_config["MAX_KEYWORDS_SIZE"])
@@ -105,11 +106,11 @@ class ResumeAnalyzer:
 
         summarize = self.cleaning.normalize_whitespace(summarize)
 
-        sql = f""" update {schema}.{table} SET summarization = "{summarize}" WHERE fileId='{fileId}' """
+        timestamp = datetime.now()
 
-        print(sql)
+        sql = f""" INSERT into {schema}.{table} values ('{fileId}','{summarize}','{timestamp}') """
 
-        self.db.update(sql)
+        self.db.insert(sql)
 
         return summarize
         pass
