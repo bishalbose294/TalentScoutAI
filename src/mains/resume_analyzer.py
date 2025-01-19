@@ -105,7 +105,7 @@ class ResumeAnalyzer:
 
         summarize = self.cleaning.normalize_whitespace(summarize)
 
-        sql = f""" update {schema}.{table} SET summarization = '{summarize}' WHERE fileId='{fileId}' """
+        sql = f""" update {schema}.{table} SET summarization = "{summarize}" WHERE fileId='{fileId}' """
 
         print(sql)
 
