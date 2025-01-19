@@ -74,7 +74,7 @@ class FileManagement:
         pass
 
     def ifFileUploadable(self, folder):
-        if os.listdir(folder).count() >= upload_capacity:
+        if len(os.listdir(folder)) >= upload_capacity:
             return False
         return True
         pass
@@ -104,6 +104,8 @@ class FileManagement:
         d = datetime.now() - relativedelta.relativedelta(days=expiration_days)
         sql = f""" select fileType, fileName from {schema}.{fileTable} where timestamp < {d} """
 
+
+        print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SQL: {sql}")
         result = self.db.select(sql)
 
         print(result)

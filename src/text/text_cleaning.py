@@ -56,3 +56,6 @@ class TextCleaner:
         sentence = self.__remove_whitespace(sentence)
         return sentence
         pass
+
+    def normalize_whitespace(self, string):
+        return re.sub(r'(\s)\1{1,}', r'\1', string)

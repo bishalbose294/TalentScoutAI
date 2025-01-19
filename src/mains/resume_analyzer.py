@@ -103,6 +103,8 @@ class ResumeAnalyzer:
         for summary in response:
             summarize += " "+str(summary['summary_text'])
 
+        summarize = self.cleaning.normalize_whitespace(summarize)
+
         sql = f""" update {schema}.{table} SET summarization = '{summarize}' WHERE fileId='{fileId}' """
 
         print(sql)
