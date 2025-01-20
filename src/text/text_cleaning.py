@@ -58,4 +58,4 @@ class TextCleaner:
         pass
 
     def normalize_whitespace(self, string):
-        return re.sub(r'(\s)\1{1,}', r'\1', string)
+        return re.sub(r'(\s)\1{1,}', r'\1', string).replace("'","")
