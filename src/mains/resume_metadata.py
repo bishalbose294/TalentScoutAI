@@ -1,4 +1,5 @@
 import re, os, configparser
+import simplejson as json
 from pdfminer.high_level import extract_text
 import spacy
 from spacy.matcher import Matcher
@@ -147,6 +148,8 @@ class ResumeMetaData():
             resume_info["Skills"] = ""
         
         timestamp = datetime.now()
+
+        resume_info = json.dumps(resume_info).replace("'","\"")
 
         sql = f""" INSERT into {schema}.{keywordTable} values ('{fileId}','{resume_info}','{timestamp}') """
         print(f">>>>>>>>>>>>>>> {sql}")
