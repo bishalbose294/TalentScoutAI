@@ -101,8 +101,8 @@ class FileManagement:
                 if item_time < criticalTime:
                     os.remove(filePath)
 
-        d = datetime.now() - relativedelta.relativedelta(days=expiration_days)
-        sql = f""" select fileType, fileName from {schema}.{fileTable} where timestamp < {d} """
+        d = datetime.now() - relativedelta.relativedelta(minutes=expiration_days)
+        sql = f""" select fileType, fileName from {schema}.{fileTable} where timestamp < '{d}' """
 
 
         print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SQL: {sql}")
