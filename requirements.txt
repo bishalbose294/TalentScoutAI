@@ -24,3 +24,4 @@ Werkzeug
 protobuf
 lightning
 huggingface_hub
+unicode

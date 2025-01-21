@@ -2,6 +2,7 @@ import re
 import nltk
 from nltk.stem import WordNetLemmatizer
 from src.utils.commonutils import CommonUtils
+import unicode
 
 nltk.download('wordnet')
 
@@ -58,4 +59,7 @@ class TextCleaner:
         pass
 
     def normalize_whitespace(self, string):
-        return re.sub(r'(\s)\1{1,}', r'\1', string).replace("'","")
+        string = re.sub(r'(\s)\1{1,}', r'\1', string).replace("'","")
+        string = unicode(string, "UTF-8")
+        string = string.replace(u"\u00A0", " ").replace(u"\u00a0", " ")
+        return string
