@@ -8,7 +8,6 @@ config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
 fileTable = db_config['FILETABLE']
-processedResumeTable = db_config['PROCESSEDRESUME']
 upload_capacity = int(db_config['UPLOADCAPACITY'])
 expiration_days = int(db_config['EXPIRATIONDAYS'])
 
@@ -66,12 +65,10 @@ class FileManagement:
             filename = result[1]
             fileType = result[2]
 
-            sql = f""" select summarization, meta_data from {schema}.{processedResumeTable} where fileId = '{fileId}' """
-            results = self.db.select(sql)
-
-            fileDict[fileId] = {"filename": filename, "fileType": fileType, "summary": results[0][0], "meta_data": results[0][1]}
+            fileDict[fileId] = {"filename": filename, "fileType": fileType}
         return fileDict
         pass
+
 
     def ifFileUploadable(self, folder):
         if len(os.listdir(folder)) >= upload_capacity:

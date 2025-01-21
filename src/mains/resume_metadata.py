@@ -5,6 +5,7 @@ from spacy.matcher import Matcher
 from src.utils.commonutils import CommonUtils
 from src.mains.resume_analyzer import ResumeAnalyzer
 from src.utils.database import DBConnector
+from datetime import datetime
 
 
 config = configparser.ConfigParser()
@@ -12,6 +13,7 @@ config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
 table = db_config['FILETABLE']
+keywordTable = db_config['KEYWORDTABLE']
 
 class ResumeMetaData():
 
@@ -144,10 +146,11 @@ class ResumeMetaData():
         else:
             resume_info["Skills"] = ""
         
+        timestamp = datetime.now()
 
-        sql = f""" update {schema}.{table} SET meta_data = {resume_info} WHERE fileId='{fileId}' """
+        sql = f""" INSERT into {schema}.{keywordTable} values ('{fileId}','{resume_info}','{timestamp}') """
 
-        self.db.update(sql)
+        self.db.insert(sql)
         
         return resume_info
     
@@ -204,9 +207,14 @@ class ResumeMetaData():
             else:
                 meta_data["Skills"] = ""
             
-
             resume_info[resume] = meta_data
         
         return resume_info
+    
+    def getExtractedKeywords(self, fileId):
+        sql = f""" select extracted_info from {schema}.{keywordTable} where fileId = '{fileId}' """
+        results = self.db.select(sql)
+        return {"extracted_info": results[0][0]}
+        pass
 
     pass

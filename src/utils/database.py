@@ -30,9 +30,15 @@ class DBConnector:
                     timestamp TIMESTAMP
                 ); """)
         
-        table_list.append(f""" CREATE TABLE if not exists {db_config["PROCESSEDRESUME"]} (
+        table_list.append(f""" CREATE TABLE if not exists {db_config["SUMMARYTABLE"]} (
                     fileId VARCHAR(255) PRIMARY KEY,
                     summary VARCHAR,
+                    timestamp TIMESTAMP
+                ); """)
+        
+        table_list.append(f""" CREATE TABLE if not exists {db_config["KEYWORDTABLE"]} (
+                    fileId VARCHAR(255) PRIMARY KEY,
+                    extracted_info VARCHAR,
                     timestamp TIMESTAMP
                 ); """)
         

@@ -15,7 +15,7 @@ analyzer_config = config["ANALYZER"]
 
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
-table = db_config['PROCESSEDRESUME']
+summaryTable = db_config['SUMMARYTABLE']
 
 topKey = float(analyzer_config["TOP_KEYWORDS"])
 maxGram = float(analyzer_config["MAX_KEYWORDS_SIZE"])
@@ -108,11 +108,17 @@ class ResumeAnalyzer:
 
         timestamp = datetime.now()
 
-        sql = f""" INSERT into {schema}.{table} values ('{fileId}','{summarize}','{timestamp}') """
+        sql = f""" INSERT into {schema}.{summaryTable} values ('{fileId}','{summarize}','{timestamp}') """
 
         self.db.insert(sql)
 
         return summarize
+        pass
+
+    def getExtractedSummary(self, fileId):
+        sql = f""" select summary from {schema}.{summaryTable} where fileId = '{fileId}' """
+        results = self.db.select(sql)
+        return {"summary": results[0][0]}
         pass
     
     pass
