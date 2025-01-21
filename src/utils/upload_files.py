@@ -101,16 +101,10 @@ class FileManagement:
                 if item_time < criticalTime:
                     os.remove(filePath)
 
-        d = datetime.now() - relativedelta.relativedelta(minutes=expiration_days)
-        sql = f""" select fileType, fileName from {schema}.{fileTable} where timestamp < '{d}' """
-
-
-        print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SQL: {sql}")
-        result = self.db.select(sql)
-
-        print(result)
-
-
+        d = datetime.now() - relativedelta.relativedelta(days=expiration_days)
+        sql = f""" delete from {schema}.{fileTable} where timestamp < '{d}' """
+        self.db.delete(sql)
+        print(f"Files deleted")
         pass
 
     pass
