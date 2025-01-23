@@ -147,6 +147,27 @@ def summarize_resume():
 
 app.add_url_rule("/summarize_resume", 'summarize_resume', summarize_resume, methods=methods)
 
+
+def get_extracted_summary():
+   try:
+
+      email = request.get_json()['email']
+      fileId = request.get_json()['fileId']
+      resumeAnalyze = ResumeAnalyzer()
+      response = resumeAnalyze.getExtractedSummary(fileId)
+      return json.dumps(response)
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      cleanFolder()
+      pass
+   pass
+
+app.add_url_rule("/get_extracted_summary", 'get_extracted_summary', get_extracted_summary, methods=methods)
+
 def extract_resume_metadata():
    try:
 
@@ -187,6 +208,27 @@ def extract_resume_metadata():
    pass
 
 app.add_url_rule("/extract_resume_metadata", 'extract_resume_metadata', extract_resume_metadata, methods=methods)
+
+def get_extracted_keywords():
+   try:
+
+      email = request.get_json()['email']
+      fileId = request.get_json()['fileId']
+      metadata = ResumeMetaData()
+      response = metadata.getExtractedKeywords(fileId)
+      return json.dumps(response)
+   
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      cleanFolder()
+      pass
+   pass
+
+app.add_url_rule("/get_extracted_keywords", 'get_extracted_keywords', get_extracted_keywords, methods=methods)
+
 
 def login():
    try:
