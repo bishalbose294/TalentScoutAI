@@ -162,7 +162,7 @@ class ResumeMetaData():
         resume_info = json.dumps(resume_info).replace("'","\"")
 
         sql = f""" INSERT into {schema}.{keywordTable} values ('{fileId}','{resume_info}','{timestamp}') """
-        print(f">>>>>>>>>>>>>>> {sql}")
+
         self.db.insert(sql)
         
         return resume_info
