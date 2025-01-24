@@ -368,7 +368,7 @@ def get_credits():
    email = request.get_json()['email']
    cred = Credits()
    response = cred.get_credits(email)
-   return json.loads(response)
+   return json.loads(response.replace)
    pass
 
 app.add_url_rule("/get_credits", 'get_credits', get_credits, methods=methods)
