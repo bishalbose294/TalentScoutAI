@@ -5,7 +5,7 @@ import os, traceback
 from src.mains.candidate_job_match import MatchJobCandidate
 from src.mains.resume_analyzer import ResumeAnalyzer
 from src.mains.resume_metadata import ResumeMetaData
-from utils.file_management import FileManagement
+from src.utils.file_management import FileManagement
 from src.mains.credits import Credits
 from src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
