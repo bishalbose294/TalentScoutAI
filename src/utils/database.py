@@ -19,7 +19,7 @@ class DBConnector:
 
         table_list.append(f""" CREATE TABLE if not exists {db_config["CREDITTABLE"]} (
                     email VARCHAR(255) PRIMARY KEY,
-                    credits FLOAT NOT NULL
+                    credits INT NOT NULL
                 ); """)
         
         table_list.append(f""" CREATE TABLE if not exists {db_config["FILETABLE"]} (

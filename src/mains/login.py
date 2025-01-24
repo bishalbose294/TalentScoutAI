@@ -5,8 +5,8 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
-table = db_config["LOGINTABLE"]
-
+loginTable = db_config["LOGINTABLE"]
+creditTable = db_config["CREDITTABLE"]
 
 class LoginClass:
 
@@ -15,7 +15,7 @@ class LoginClass:
         pass
 
     def userLogin(self, email, password):
-        sql = f"""select * from {schema}.{table} where email='{email}' and password='{password}' """
+        sql = f"""select * from {schema}.{loginTable} where email='{email}' and password='{password}' """
         result = self.dbconnect.select(sql)
         if result:
             return "Success"
@@ -24,8 +24,12 @@ class LoginClass:
         pass
 
     def userRegister(self, email, password):
-        sql = f"""insert into {schema}.{table} values ('{email}','{password}')"""
+        sql = f"""insert into {schema}.{loginTable} values ('{email}','{password}')"""
         result = self.dbconnect.insert(sql)
+
+        sql = f"""insert into {schema}.{creditTable} values ('{email}','{50}')"""
+        result = self.dbconnect.insert(sql)
+
         return "Success"
         pass
 
