@@ -174,7 +174,7 @@ def get_extracted_keywords():
       email = request.get_json()['email']
       fileId = request.get_json()['fileId']
       metadata = ResumeMetaData()
-      response = metadata.getExtractedKeywords(fileId)
+      response = json.loads(metadata.getExtractedKeywords(fileId))
       return json.dumps(response)
    
    except Exception as ex:
