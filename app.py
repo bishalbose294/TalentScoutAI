@@ -1,12 +1,12 @@
 from flask import Flask, redirect, url_for, render_template, request, jsonify, send_file
 from flask_cors import CORS
 import simplejson as json
-import os, time, traceback
-import shutil
+import os, traceback
 from src.mains.candidate_job_match import MatchJobCandidate
 from src.mains.resume_analyzer import ResumeAnalyzer
 from src.mains.resume_metadata import ResumeMetaData
-from src.utils.upload_files import FileManagement
+from utils.file_management import FileManagement
+from src.mains.credits import Credits
 from src.mains.login import LoginClass
 from flask_ngrok import run_with_ngrok
 from pyngrok import ngrok
@@ -363,6 +363,35 @@ def download_file():
    return send_file(filePath)
 
 app.add_url_rule("/download_file", 'download_file', download_file, methods=methods)
+
+def get_credits():
+   email = request.get_json()['email']
+   cred = Credits()
+   response = cred.get_credits(email)
+   return json.loads(response)
+   pass
+
+app.add_url_rule("/get_credits", 'get_credits', get_credits, methods=methods)
+
+def add_credits():
+   email = request.get_json()['email']
+   addCredits = request.get_json()['credits']
+   cred = Credits()
+   response = cred.add_credits(email, addCredits)
+   return json.loads(response)
+   pass
+
+app.add_url_rule("/add_credits", 'add_credits', add_credits, methods=methods)
+
+def subtract_credits():
+   email = request.get_json()['email']
+   subCredits = request.get_json()['credits']
+   cred = Credits()
+   response = cred.substract_credits(email, subCredits)
+   return json.loads(response)
+   pass
+
+app.add_url_rule("/subtract_credits", 'subtract_credits', subtract_credits, methods=methods)
 
 if __name__ == '__main__':
    print("Getting things started !!")

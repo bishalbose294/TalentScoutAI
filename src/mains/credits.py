@@ -16,7 +16,7 @@ class Credits:
     def get_credits(self, email):
         sql = f""" select credits from {schema}.{creditTable} WHERE email = '{email}' """
         result = self.db.select(sql)
-        return int(result[0][0])
+        return {"balance_credits": int(result[0][0])}
         pass
 
     def add_credits(self, email, credits):
@@ -26,7 +26,7 @@ class Credits:
         sql = f""" UPDATE {schema}.{creditTable} SET credits = {int(initial_credits+credits)} WHERE email = '{email}' """
         self.db.update(sql)
 
-        return f"{credits} added successfully"
+        return {"msg": f"{credits} added successfully", "balance_credits": int(initial_credits+credits)}
         pass
 
     def substract_credits(self, email, credits):
@@ -36,7 +36,7 @@ class Credits:
         sql = f""" UPDATE {schema}.{creditTable} SET credits = {int(initial_credits-credits)} WHERE email = '{email}' """
         self.db.update(sql)
 
-        return f"{credits} added successfully"
+        return {"msg": f"{credits} removed successfully", "balance_credits": int(initial_credits-credits)}
         pass
 
     pass
