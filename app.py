@@ -153,7 +153,7 @@ def extract_resume_metadata():
       fileId = request.get_json()['fileId']
       
       metadata = ResumeMetaData()
-      response = metadata.extractMetaData(app.config["UPLOAD_FOLDER"], email, fileId)
+      response = json.loads(metadata.extractMetaData(app.config["UPLOAD_FOLDER"], email, fileId))
 
       return json.dumps(response)
    
