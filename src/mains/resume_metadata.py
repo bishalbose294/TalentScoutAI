@@ -13,7 +13,7 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
-table = db_config['FILETABLE']
+fileTable = db_config['FILETABLE']
 keywordTable = db_config['KEYWORDTABLE']
 
 class ResumeMetaData():
@@ -101,7 +101,17 @@ class ResumeMetaData():
     def extract_keywords(self, text):
         return self.analyzer.extractKeywords(text)
     
-    def extractMetaData(self, resumePath, fileId):
+    def extractMetaData(self, basePath, email, fileId):
+
+        sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
+
+        results = self.db.select(sql)
+
+        fileName = results[0][0]
+        fileType = results[0][1]
+
+        resumePath = os.path.join(basePath,email,fileType,fileName)
+
 
         resume_info = dict()
         text = self.extract_text_from_pdf(resumePath)

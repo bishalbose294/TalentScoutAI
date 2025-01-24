@@ -15,6 +15,7 @@ analyzer_config = config["ANALYZER"]
 
 db_config = config["DATABASE"]
 schema = db_config["SCHEMA"]
+fileTable = db_config["FILETABLE"]
 summaryTable = db_config['SUMMARYTABLE']
 
 topKey = float(analyzer_config["TOP_KEYWORDS"])
@@ -95,7 +96,16 @@ class ResumeAnalyzer:
         return resumeSummarize
         pass
 
-    def resumeSummarizer(self, resumePath, fileId):
+    def resumeSummarizer(self, basePath, email, fileId):
+
+        sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
+
+        results = self.db.select(sql)
+
+        fileName = results[0][0]
+        fileType = results[0][1]
+
+        resumePath = os.path.join(basePath,email,fileType,fileName)
 
         resumeChunk_list = self.chunk.chunk(resumePath)
         response = self.__summarizeBatch(resumeChunk_list)

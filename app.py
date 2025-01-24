@@ -52,10 +52,7 @@ def calculate_scores():
 
       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
 
-      if not os.path.exists(jds_folder):
-         os.makedirs(jds_folder)
-      elif not fileUpload.ifFileUploadable(jds_folder):
-         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
+      
 
       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
       
@@ -109,30 +106,11 @@ app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, meth
 def summarize_resume():
    try:
 
-      fileMgmt = FileManagement()
-
-      email = request.form['email']
-
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
-      
-      if not os.path.exists(res_foler):
-         os.makedirs(res_foler)
-      elif not fileMgmt.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
-      
-      resumefiles = request.files.getlist("resfiles")
-      if len(resumefiles) > 1:
-         return json.dumps({"msg": "Please upload only 1 file"})
-      
-      file=resumefiles[0]
-      if file.filename:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
-
-      fileId = fileMgmt.uploadFile(file.filename, email, "resumes")
+      email = request.get_json()['email']
+      fileId = request.get_json()['fileId']
       
       resumeAnalyze = ResumeAnalyzer()
-      response = resumeAnalyze.resumeSummarizer(filePath, fileId)
+      response = resumeAnalyze.resumeSummarizer(app.config["UPLOAD_FOLDER"], email, fileId)
 
       return json.dumps(response)
    
@@ -171,30 +149,11 @@ app.add_url_rule("/get_extracted_summary", 'get_extracted_summary', get_extracte
 def extract_resume_metadata():
    try:
 
-      fileMgmt = FileManagement()
-
-      email = request.form['email']
-
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
-      
-      if not os.path.exists(res_foler):
-         os.makedirs(res_foler)
-      elif not fileMgmt.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
-      
-      resumefiles = request.files.getlist("resfiles")
-      if len(resumefiles) > 1:
-         return json.dumps({"msg": "Please upload only 1 file"})
-      
-      file=resumefiles[0]
-      if file.filename:
-         filePath = os.path.join(res_foler, file.filename)
-         file.save(filePath)
-      
-      fileId = fileMgmt.uploadFile(file.filename, email, "resumes")
+      email = request.get_json()['email']
+      fileId = request.get_json()['fileId']
       
       metadata = ResumeMetaData()
-      response = metadata.extractMetaData(filePath, fileId)
+      response = metadata.extractMetaData(app.config["UPLOAD_FOLDER"], email, fileId)
 
       return json.dumps(response)
    
@@ -294,47 +253,54 @@ def register():
 app.add_url_rule("/register", 'register', register, methods=methods)
 
 
-# def upload_files():
-#    try:
-#       email = request.form['email']
+def upload_files():
+   try:
 
-#       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+      fileMgmt = FileManagement()
 
-#       if not os.path.exists(jds_folder):
-#          os.makedirs(jds_folder)
+      email = request.form['email']
 
-#       res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
+
+      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
+
+      if not os.path.exists(jds_folder):
+         os.makedirs(jds_folder)
+      elif not fileMgmt.ifFileUploadable(jds_folder):
+         return json.dumps({"msg": "You have reached max upload capacity for Job Descriptions. Please delete existing JD files."})
       
-#       if not os.path.exists(res_foler):
-#          os.makedirs(res_foler)
+      if not os.path.exists(res_foler):
+         os.makedirs(res_foler)
+      elif not fileMgmt.ifFileUploadable(res_foler):
+         return json.dumps({"msg": "You have reached max upload capacity for Resumes. Please delete existing Resume files."})
       
-#       fileMgmt = FileManagement()
+      jdfiles = request.files.getlist("jdfiles")
+      for file in jdfiles:
+         if file.filename:
+            filePath = os.path.join(jds_folder, file.filename)
+            file.save(filePath)
+            fileMgmt.uploadFile(file.filename, email, "jds")
 
-#       jdfiles = request.files.getlist("jdfiles")
-#       for file in jdfiles:
-#          if file.filename:
-#             filePath = os.path.join(jds_folder, file.filename)
-#             file.save(filePath)
-#             fileMgmt.uploadFile(file.filename, email, "jds")
+      resumefiles = request.files.getlist("resfiles")
+      for file in resumefiles:
+         if file.filename:
+            filePath = os.path.join(res_foler, file.filename)
+            file.save(filePath)
+            fileMgmt.uploadFile(file.filename, email, "resumes")
+      
+      fileList = fileMgmt.getFileMetaList(email)
 
-#       resumefiles = request.files.getlist("resfiles")
-#       for file in resumefiles:
-#          if file.filename:
-#             filePath = os.path.join(res_foler, file.filename)
-#             file.save(filePath)
-#             fileMgmt.uploadFile(file.filename, email, "resumes")
+      return json.dumps({"msg": "Files uploaded Successfully", "Files": fileList})
+   except Exception as ex:
+      print("Exception: ",ex.with_traceback)
+      print(traceback.format_exc())
+      return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
+   finally:
+      cleanFolder()
+      pass
+   pass
 
-#       return json.dumps({"msg": "Files uploaded Successfully"})
-#    except Exception as ex:
-#       print("Exception: ",ex.with_traceback)
-#       print(traceback.format_exc())
-#       return jsonify({"error": str(ex), "traceback": traceback.format_exc()})
-#    finally:
-#       cleanFolder()
-#       pass
-#    pass
-
-# app.add_url_rule("/upload_files", 'upload_files', upload_files, methods=methods)
+app.add_url_rule("/upload_files", 'upload_files', upload_files, methods=methods)
 
 
 def delete_files():
