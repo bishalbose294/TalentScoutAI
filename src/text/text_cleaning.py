@@ -8,7 +8,6 @@ nltk.download('wordnet')
 class TextCleaner:
 
     def __init__(self) -> None:
-        self.lemmatizer = WordNetLemmatizer()
         self.comonUtils = CommonUtils()
         self.stopwords = self.comonUtils.loadStropwords()
         self.abbr_words = self.comonUtils.loadAbbreviations()
@@ -35,6 +34,7 @@ class TextCleaner:
         return cleaned_text
 
     def __lemmatize_text(self, tokens):
+        self.lemmatizer = WordNetLemmatizer()
         lemmatized_tokens = ' '.join([self.lemmatizer.lemmatize(word) for word in tokens.split()])
         return lemmatized_tokens
 

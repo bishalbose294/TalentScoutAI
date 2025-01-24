@@ -19,14 +19,14 @@ class MatchJobCandidate:
 
     def __init__(self) -> None:
         self.compareMetrics = CompareMetrics()
-        self.analyzer = ResumeAnalyzer()
         self.chunk = Chunk()
-        self.embedding = SentEmbeddings()
         self.utility = CommonUtils()
         self.cleaner = TextCleaner()
         pass
 
     def __match(self, jdFile, resumeFile):
+
+        self.embedding = SentEmbeddings()
 
         metric = 0
         jdChunkList = self.chunk.chunk(jdFile)
@@ -46,6 +46,8 @@ class MatchJobCandidate:
         pass
 
     def __keywordsMatch(self, jdFile, resumeFile):
+
+        self.analyzer = ResumeAnalyzer()
 
         jdtext_list = self.chunk.chunk(jdFile)
         resumeText_list = self.chunk.chunk(resumeFile)

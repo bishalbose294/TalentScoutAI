@@ -13,7 +13,6 @@ embed_config = config["EMBEDDINGS"]
 class CompareMetrics:
 
     def __init__(self) -> None:
-        self.sentEmbedding = SentEmbeddings()
         self.textCleaner = TextCleaner()
         pass
     
@@ -24,6 +23,8 @@ class CompareMetrics:
         return round(util.cos_sim(emb1, emb2).numpy()[0][0].tolist(),2)
 
     def calculate_similarity(self, sent1, sent2):
+
+        self.sentEmbedding = SentEmbeddings()
         metrics = dict()
         cleaned_sent1 = self.textCleaner.clean_text(sent1)
         cleaned_sent2 = self.textCleaner.clean_text(sent2)

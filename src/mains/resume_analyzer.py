@@ -28,19 +28,15 @@ minlength = int(analyzer_config["RESUME_MINLENGTH"])
 class ResumeAnalyzer:
 
     def __init__(self) -> None:
-
-        self.keywordExtractor = KeyphraseExtractionPipeline()
         self.cleaning = TextCleaner()
-        self.embeddings = SentEmbeddings()
         self.compare = CompareMetrics()
         self.chunk = Chunk(chunksize=1000, overlap=100)
-        self.summarizer = pipeline("summarization", model=resume_summarizer)
         self.db = DBConnector()
-        
         pass
 
 
     def extractKeywords(self, text):
+        self.keywordExtractor = KeyphraseExtractionPipeline()
         keywords = self.keywordExtractor(text)
         keylist = []
         for kw in keywords:
@@ -51,6 +47,8 @@ class ResumeAnalyzer:
 
 
     def keywordsPartialMatch(self, jdKeywords, resumeKeywords):
+
+        self.embeddings = SentEmbeddings()
 
         jdKeywords = sorted(list(set(jdKeywords)))
         resumeKeywords = sorted(list(set(resumeKeywords)))
@@ -75,6 +73,7 @@ class ResumeAnalyzer:
     
 
     def __summarizeBatch(self, textBatch):
+        self.summarizer = pipeline("summarization", model=resume_summarizer)
         return self.summarizer(textBatch, max_length=maxlength, min_length=minlength, do_sample=False)
         pass
 
