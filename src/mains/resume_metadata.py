@@ -227,7 +227,7 @@ class ResumeMetaData():
     def getExtractedKeywords(self, fileId):
         sql = f""" select extracted_info from {schema}.{keywordTable} where fileId = '{fileId}' """
         results = self.db.select(sql)
-        return {"extracted_info": results[0][0]}
+        return {"extracted_info": json.loads(results[0][0])}
         pass
 
     pass
