@@ -153,7 +153,7 @@ class MatchJobCandidate:
         jd_resume_keywords_match_db = str(jd_resume_keywords_match).replace("\'","\"")
         resume_keywords_db = str(resume_keywords).replace("\'","\"")
 
-        sql = f""" insert into {schema}.{jd_resume_match_table} values ('{jdFileId}','{resumeFileId}','{str(metric)}','{jd_resume_keywords_match_db}','{resume_keywords_db}','{timestamp}') """
+        sql = f""" insert into {schema}.{jd_resume_match_table} values ('{jdFileId}','{resumeFileId}','{email}','{str(metric)}','{jd_resume_keywords_match_db}','{resume_keywords_db}','{timestamp}') """
 
         self.db.insert(sql)
 
