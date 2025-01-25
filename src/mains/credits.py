@@ -26,7 +26,7 @@ class Credits:
         sql = f""" UPDATE {schema}.{creditTable} SET credits = {int(balance_credits+credits)} WHERE email = '{email}' """
         self.db.update(sql)
 
-        return {"msg": f"{credits} added successfully", "balance_credits": str(int(balance_credits+credits))}
+        return {"msg": f"{credits} credits added successfully", "balance_credits": str(int(balance_credits+credits))}
         pass
 
     def substract_credits(self, email, credits):
@@ -36,7 +36,7 @@ class Credits:
         sql = f""" UPDATE {schema}.{creditTable} SET credits = {int(balance_credits-credits)} WHERE email = '{email}' """
         self.db.update(sql)
 
-        return {"msg": f"{credits} removed successfully", "balance_credits": str(int(balance_credits-credits))}
+        return {"msg": f"{credits} credits removed successfully", "balance_credits": str(int(balance_credits-credits))}
         pass
 
     def check_sufficient_credit(self, email, creditsToBeUsed):
