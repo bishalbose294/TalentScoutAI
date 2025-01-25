@@ -5,12 +5,19 @@ from src.mains.resume_analyzer import ResumeAnalyzer
 from src.text.embeddings import SentEmbeddings
 from src.utils.commonutils import CommonUtils
 from src.text.text_cleaning import TextCleaner
+from src.utils.database import DBConnector
 import configparser
+from datetime import datetime
 
 
 config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 candidate_config = config["CANDIDATE"]
+
+db_config = config["DATABASE"]
+schema = db_config["SCHEMA"]
+fileTable = db_config["FILETABLE"]
+jd_resume_match_table = db_config["JDRESUMEMATCHTABLE"]
 
 pointsThreshold = int(candidate_config["RESUME_MATCH_POINT_THRESHOLD"])
 sectionMatchThreshold = float(candidate_config["SECTION_MATCH_POINT_THRESHOLD"])
@@ -22,6 +29,7 @@ class MatchJobCandidate:
         self.chunk = Chunk()
         self.utility = CommonUtils()
         self.cleaner = TextCleaner()
+        self.db = DBConnector()
         pass
 
     def __match(self, jdFile, resumeFile):
@@ -70,9 +78,30 @@ class MatchJobCandidate:
 
         return self.analyzer.keywordsPartialMatch(keywordsJD, keywordsRES), resumeKey
         pass
+    
 
+    def generatePointer(self, email, basePath, jdFileId, resumeFileId):
+        
+        sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{jdFileId}' or fileId = '{resumeFileId}' """
 
-    def generatePointers(self, jodDescFolder, resumeFolder):
+        results = self.db.select(sql)
+
+        resumePath = None
+        jdPath = None
+        for result in results:
+            fileType = result[1]
+            fileName = result[0]
+            if fileType == "resumes":
+                resumePath = os.path.join(basePath,email,fileType,fileName)
+            elif fileType == "jds":
+                jdPath = os.path.join(basePath,email,fileType,fileName)
+        
+        metric = self.__match(jdPath, resumePath)
+        
+        return metric
+        pass
+
+    def generateBatchPointers(self, jodDescFolder, resumeFolder):
         jd_list = os.listdir(jodDescFolder)
         resume_list = os.listdir(resumeFolder)
 
@@ -93,7 +122,43 @@ class MatchJobCandidate:
         return jd_dict
         pass
 
-    def extractJDResumeKeywords(self, jodDescFolder, resumeFolder):
+    def extractJDResumeKeyword(self, email, basePath, jdFileId, resumeFileId):
+        
+        sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{jdFileId}' or fileId = '{resumeFileId}' """
+
+        results = self.db.select(sql)
+
+        resumePath = None
+        jdPath = None
+        for result in results:
+            fileType = result[1]
+            fileName = result[0]
+            if fileType == "resumes":
+                resumePath = os.path.join(basePath,email,fileType,fileName)
+            elif fileType == "jds":
+                jdPath = os.path.join(basePath,email,fileType,fileName)
+
+        
+        jd_resume_keywords_match, resume_keywords  = self.__keywordsMatch(jdPath, resumePath)
+        
+        return jd_resume_keywords_match, resume_keywords
+        pass
+
+    def matchJdResume(self, email, basePath, jdFileId, resumeFileId):
+        metric = self.generatePointer(email, basePath, jdFileId, resumeFileId)
+        jd_resume_keywords_match, resume_keywords = self.extractJDResumeKeyword(email, basePath, jdFileId, resumeFileId)
+
+        timestamp = datetime.now()
+
+        sql = f""" insert into {schema}.{jd_resume_match_table} values ({jdFileId},{resumeFileId},{str(metric)},{str(jd_resume_keywords_match).replace("\'","\"")},{str(resume_keywords).replace("\'","\"")},{timestamp}) """
+
+        self.db.insert(sql)
+
+        return metric, jd_resume_keywords_match, resume_keywords
+        pass
+
+
+    def extractBatchJDResumeKeywords(self, jodDescFolder, resumeFolder):
         jd_list = os.listdir(jodDescFolder)
         resume_list = os.listdir(resumeFolder)
 

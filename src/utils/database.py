@@ -42,6 +42,15 @@ class DBConnector:
                     timestamp TIMESTAMP
                 ); """)
         
+        table_list.append(f""" CREATE TABLE if not exists {db_config["JDRESUMEMATCHTABLE"]} (
+                    jdId VARCHAR(255),
+                    resumeId VARCHAR(255),
+                    metric VARCHAR,
+                    jd_resume_keywords_match VARCHAR,
+                    resume_keywords VARCHAR,
+                    timestamp TIMESTAMP
+                ); """)
+        
         for table in table_list:
             try:
                 self.cursor.execute(table)

@@ -46,52 +46,14 @@ def cleanFolder():
 def calculate_scores():
    try:
 
-      fileUpload = FileManagement()
-
-      email = request.form['email']
-
-      jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
-
-      
-
-      res_foler = os.path.join(app.config["UPLOAD_FOLDER"],email,"resumes")
-      
-      if not os.path.exists(res_foler):
-         os.makedirs(res_foler)
-      elif not fileUpload.ifFileUploadable(res_foler):
-         return json.dumps({"msg": "You have reached max upload capacity. Please delete existing files."})
-
-
-      jdfiles = request.files.getlist("jdfiles")
-      for file in jdfiles:
-         if file.filename:
-            filePath = os.path.join(jds_folder, file.filename)
-            file.save(filePath)
-            fileId = fileUpload.uploadFile(file.filename, email, "jds")
-      
-      resumefiles = request.files.getlist("resfiles")
-      for file in resumefiles:
-         if file.filename:
-            filePath = os.path.join(res_foler, file.filename)
-            file.save(filePath)
-            fileUpload.uploadFile(file.filename, email, "resumes")
+      email = request.get_json()['email']
+      jdFileId = request.get_json()['jdFileId']
+      resumeFileId = request.get_json()['resumeFileId']
       
       match = MatchJobCandidate()
-      pointers = match.generatePointers(jds_folder, res_foler)
-      keywords = match.extractJDResumeKeywords(jds_folder, res_foler)
+      metric, jd_resume_keywords_match, resume_keywords = match.matchJdResume(email, app.config["UPLOAD_FOLDER"], jdFileId, resumeFileId)
 
-      final_dict = dict()
-
-      for jd, resumePointers in pointers.items():
-         temp_dict = dict()
-         for resume, points in resumePointers.items():
-            temp_dict[resume] = {
-               'points' : points,
-               'keywords' : keywords[jd][resume],
-            }
-         final_dict[jd] = temp_dict
-
-      return json.dumps(final_dict)
+      return jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
@@ -368,30 +330,30 @@ def get_credits():
    email = request.get_json()['email']
    cred = Credits()
    response = cred.get_credits(email)
-   return json.loads(response.replace)
+   return jsonify(response)
    pass
 
 app.add_url_rule("/get_credits", 'get_credits', get_credits, methods=methods)
 
 def add_credits():
    email = request.get_json()['email']
-   addCredits = request.get_json()['credits']
+   addCredits = int(request.get_json()['credits'])
    cred = Credits()
    response = cred.add_credits(email, addCredits)
-   return json.loads(response)
+   return jsonify(response)
    pass
 
 app.add_url_rule("/add_credits", 'add_credits', add_credits, methods=methods)
 
-def subtract_credits():
-   email = request.get_json()['email']
-   subCredits = request.get_json()['credits']
-   cred = Credits()
-   response = cred.substract_credits(email, subCredits)
-   return json.loads(response)
-   pass
+# def subtract_credits():
+#    email = request.get_json()['email']
+#    subCredits = int(request.get_json()['credits'])
+#    cred = Credits()
+#    response = cred.substract_credits(email, subCredits)
+#    return jsonify(response)
+#    pass
 
-app.add_url_rule("/subtract_credits", 'subtract_credits', subtract_credits, methods=methods)
+# app.add_url_rule("/subtract_credits", 'subtract_credits', subtract_credits, methods=methods)
 
 if __name__ == '__main__':
    print("Getting things started !!")
