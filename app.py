@@ -65,6 +65,19 @@ def calculate_scores():
    
 app.add_url_rule("/calculate_scores", 'calculate_scores', calculate_scores, methods=methods)
 
+def get_calculated_scores():
+   email = request.get_json()['email']
+   jdFileId = request.get_json()['jdFileId']
+   resumeFileId = request.get_json()['resumeFileId']
+
+   match = MatchJobCandidate()
+   metric, jd_resume_keywords_match, resume_keywords = match.getCalculatedScores(email, jdFileId, resumeFileId)
+
+   return jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
+   pass
+
+app.add_url_rule("/get_calculated_scores", 'get_calculated_scores', get_calculated_scores, methods=methods)
+
 def summarize_resume():
    try:
 

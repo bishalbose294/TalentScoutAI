@@ -196,5 +196,17 @@ class MatchJobCandidate:
             jd_dict[jd] = resume_dict
         
         return jd_dict
+    
+    def getCalculatedScores(self, email, jdFileId, resumeFileId):
+
+        sql= f""" select metric, jd_resume_keywords_match, resume_keywords from {schema}.{jd_resume_match_table} where email='{email}' and jdId='{jdFileId}' and resumeId='{resumeFileId}' """
+
+        results = self.db.select(sql)
+
+        metric, jd_resume_keywords_match, resume_keywords = results[0][0], results[0][1], results[0][2]
+
+        return metric, jd_resume_keywords_match, resume_keywords
+
+        pass
 
     pass
