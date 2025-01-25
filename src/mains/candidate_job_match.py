@@ -150,7 +150,10 @@ class MatchJobCandidate:
 
         timestamp = datetime.now()
 
-        sql = f""" insert into {schema}.{jd_resume_match_table} values ({jdFileId},{resumeFileId},{str(metric)},{str(jd_resume_keywords_match).replace("\'","\"")},{str(resume_keywords).replace("\'","\"")},{timestamp}) """
+        jd_resume_keywords_match_db = str(jd_resume_keywords_match).replace("\'","\"")
+        resume_keywords_db = str(resume_keywords).replace("\'","\"")
+
+        sql = f""" insert into {schema}.{jd_resume_match_table} values ('{jdFileId}','{resumeFileId}','{str(metric)}','{jd_resume_keywords_match_db}','{resume_keywords_db}','{timestamp}') """
 
         self.db.insert(sql)
 
