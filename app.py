@@ -73,7 +73,7 @@ def get_calculated_scores():
    match = MatchJobCandidate()
    metric, jd_resume_keywords_match, resume_keywords = match.getCalculatedScores(email, jdFileId, resumeFileId)
 
-   return jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
+   return jsonify({"match_point": json.loads(metric), "resume_keywords": json.loads(resume_keywords), "jd_resume_keywords_match": json.loads(jd_resume_keywords_match)})
    pass
 
 app.add_url_rule("/get_calculated_scores", 'get_calculated_scores', get_calculated_scores, methods=methods)
