@@ -65,7 +65,7 @@ def calculate_scores():
 
       response = jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
 
-      return json.dumps({"response": response, "credits": credit_response})
+      return jsonify({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
