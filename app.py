@@ -20,9 +20,9 @@ api_config = config["API"]
 
 credit_config = config['CREDITS']
 
-calculate_scores_charges = credit_config['CALCULATE_SCORES']
-summarize_resume_charges = credit_config['SUMMARIZE_RESUME']
-extract_resume_metadata_charges = credit_config['EXTRACT_RESUME_METADATA']
+calculate_scores_charges = int(credit_config['CALCULATE_SCORES'])
+summarize_resume_charges = int(credit_config['SUMMARIZE_RESUME'])
+extract_resume_metadata_charges = int(credit_config['EXTRACT_RESUME_METADATA'])
 
 warnings.filterwarnings("ignore")
 
