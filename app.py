@@ -63,9 +63,9 @@ def calculate_scores():
 
       credit_response = cred.substract_credits(email, calculate_scores_charges)
 
-      response = jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
+      response = {"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match}
 
-      return {"response": response, "credits": credit_response}
+      return jsonify({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
@@ -105,7 +105,7 @@ def summarize_resume():
 
       credit_response = cred.substract_credits(email, summarize_resume_charges)
 
-      return json.dumps({"response": response, "credits": credit_response})
+      return jsonify({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
@@ -154,7 +154,7 @@ def extract_resume_metadata():
 
       credit_response = cred.substract_credits(email, calculate_scores_charges)
 
-      return json.dumps({"response": response, "credits": credit_response})
+      return jsonify({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
