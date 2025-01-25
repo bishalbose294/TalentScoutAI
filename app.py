@@ -18,7 +18,11 @@ config = configparser.ConfigParser()
 config.read("configs/config.cfg")
 api_config = config["API"]
 
-db_config = config['DATABASE']
+credit_config = config['CREDITS']
+
+calculate_scores_charges = credit_config['CALCULATE_SCORES']
+summarize_resume_charges = credit_config['SUMMARIZE_RESUME']
+extract_resume_metadata_charges = credit_config['EXTRACT_RESUME_METADATA']
 
 warnings.filterwarnings("ignore")
 
@@ -49,11 +53,19 @@ def calculate_scores():
       email = request.get_json()['email']
       jdFileId = request.get_json()['jdFileId']
       resumeFileId = request.get_json()['resumeFileId']
+
+      cred = Credits()
+      if not cred.check_sufficient_credit(email, calculate_scores_charges):
+         return jsonify({"msg": "Insufficient Credit Balance"})
       
       match = MatchJobCandidate()
       metric, jd_resume_keywords_match, resume_keywords = match.matchJdResume(email, app.config["UPLOAD_FOLDER"], jdFileId, resumeFileId)
 
-      return jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
+      credit_response = cred.substract_credits(email, calculate_scores_charges)
+
+      response = jsonify({"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match})
+
+      return json.dumps({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
@@ -83,11 +95,17 @@ def summarize_resume():
 
       email = request.get_json()['email']
       fileId = request.get_json()['fileId']
+
+      cred = Credits()
+      if not cred.check_sufficient_credit(email, summarize_resume_charges):
+         return jsonify({"msg": "Insufficient Credit Balance"})
       
       resumeAnalyze = ResumeAnalyzer()
       response = resumeAnalyze.resumeSummarizer(app.config["UPLOAD_FOLDER"], email, fileId)
 
-      return json.dumps(response)
+      credit_response = cred.substract_credits(email, summarize_resume_charges)
+
+      return json.dumps({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
@@ -126,11 +144,17 @@ def extract_resume_metadata():
 
       email = request.get_json()['email']
       fileId = request.get_json()['fileId']
+
+      cred = Credits()
+      if not cred.check_sufficient_credit(email, extract_resume_metadata_charges):
+         return jsonify({"msg": "Insufficient Credit Balance"})
       
       metadata = ResumeMetaData()
       response = json.loads(metadata.extractMetaData(app.config["UPLOAD_FOLDER"], email, fileId))
 
-      return json.dumps(response)
+      credit_response = cred.substract_credits(email, calculate_scores_charges)
+
+      return json.dumps({"response": response, "credits": credit_response})
    
    except Exception as ex:
       print("Exception: ",ex.with_traceback)
