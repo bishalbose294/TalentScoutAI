@@ -17,6 +17,16 @@ class FileManagement:
         self.db = DBConnector()
         pass
 
+    def __checkIfFileExists(self, fileId):
+        sql = f"""select fileId from {schema}.{fileTable} where fileId='{fileId}' """
+        result = self.db.select(sql)
+        if result is None:
+            return False
+        elif len(result[0])==0:
+            return False
+        return True
+        pass
+
     def uploadFile(self, fileName, email, fileType):
         fileId = str(uuid.uuid4())
         timestamp = datetime.now()
@@ -51,6 +61,10 @@ class FileManagement:
         pass
 
     def downloadFile(self, email, folderPath, fileId):
+
+        if not self.__checkIfFileExists(fileId):
+            return "No Such File"
+
         sql = f""" select fileType, fileName from {schema}.{fileTable} where fileId = '{fileId}' and email = '{email}' """
         result = self.db.select(sql)
         return os.path.join(folderPath, result[0][0], result[0][1])
