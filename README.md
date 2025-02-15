@@ -1,10 +1,6 @@
 # Talent-Scout-AI
 
 
-Pending Task
-	- credits
-	- file and response to db
+Pending Tasks
 	- transaction/order/payment history
-	- save/unsave response
 	- footer
-	- only upload files
