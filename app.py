@@ -68,7 +68,10 @@ def calculate_scores():
       match = MatchJobCandidate()
       metric, jd_resume_keywords_match, resume_keywords = match.matchJdResume(email, app.config["UPLOAD_FOLDER"], jdFileId, resumeFileId)
 
-      credit_response = cred.substract_credits(email, calculate_scores_charges)
+      subtract = calculate_scores_charges
+      if "msg" in response.keys():
+         subtract = 0
+      credit_response = cred.substract_credits(email, subtract)
 
       response = {"match_point": metric, "resume_keywords": resume_keywords, "jd_resume_keywords_match": jd_resume_keywords_match}
 
@@ -110,7 +113,10 @@ def summarize_resume():
       resumeAnalyze = ResumeAnalyzer()
       response = resumeAnalyze.resumeSummarizer(app.config["UPLOAD_FOLDER"], email, fileId)
 
-      credit_response = cred.substract_credits(email, summarize_resume_charges)
+      subtract = calculate_scores_charges
+      if "msg" in response.keys():
+         subtract = 0
+      credit_response = cred.substract_credits(email, subtract)
 
       return jsonify({"response": response, "credits": credit_response})
    
@@ -159,7 +165,11 @@ def extract_resume_metadata():
       metadata = ResumeMetaData()
       response = json.loads(metadata.extractMetaData(app.config["UPLOAD_FOLDER"], email, fileId))
 
-      credit_response = cred.substract_credits(email, calculate_scores_charges)
+      subtract = calculate_scores_charges
+      if "msg" in response.keys():
+         subtract = 0
+      
+      credit_response = cred.substract_credits(email, subtract)
 
       return jsonify({"response": response, "credits": credit_response})
    
@@ -391,15 +401,6 @@ def add_credits():
 
 app.add_url_rule("/add_credits", 'add_credits', add_credits, methods=methods)
 
-# def subtract_credits():
-#    email = request.get_json()['email']
-#    subCredits = int(request.get_json()['credits'])
-#    cred = Credits()
-#    response = cred.substract_credits(email, subCredits)
-#    return jsonify(response)
-#    pass
-
-# app.add_url_rule("/subtract_credits", 'subtract_credits', subtract_credits, methods=methods)
 
 if __name__ == '__main__':
    print("Getting things started !!")
