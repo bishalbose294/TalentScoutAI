@@ -42,10 +42,17 @@ app.config["UPLOAD_FOLDER"] = os.path.join(cwd, "data")
 methods = ['POST']
 
 def cleanFolder():
-   fileMgmt = FileManagement()
-   folders = list(os.walk(app.config["UPLOAD_FOLDER"]))[1:]
-   fileMgmt.emptyFolder(folders)
+   try:
+      fileMgmt = FileManagement()
+      folders = list(os.walk(app.config["UPLOAD_FOLDER"]))[1:]
+      fileMgmt.emptyFolder(folders)
+   except:
+      print(traceback.format_exc())
    pass
+
+@app.route("/")
+def home():
+   return "Server up & running"
 
 def calculate_scores():
    try:
