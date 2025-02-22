@@ -87,10 +87,14 @@ class DBConnector:
         pass
 
     def delete(self, sql):
-        self.createConnection()
-        deletedData = self.cursor.execute(sql)
-        self.closeConection()
-        return deletedData
+        try:
+            self.createConnection()
+            deletedData = self.cursor.execute(sql)
+            self.closeConection()
+            return deletedData
+        except:
+            print(traceback.format_exc())
+        return None
         pass
 
     def select(self, sql):

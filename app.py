@@ -258,6 +258,8 @@ def upload_files():
       fileMgmt = FileManagement()
 
       email = request.form['email']
+      jdfiles = request.files.getlist("jdfiles")
+      resumefiles = request.files.getlist("resfiles")
 
       jds_folder = os.path.join(app.config["UPLOAD_FOLDER"],email,"jds")
 
@@ -273,14 +275,14 @@ def upload_files():
       elif not fileMgmt.ifFileUploadable(res_foler):
          return json.dumps({"msg": "You have reached max upload capacity for Resumes. Please delete existing Resume files."})
       
-      jdfiles = request.files.getlist("jdfiles")
+      
       for file in jdfiles:
          if file.filename:
             filePath = os.path.join(jds_folder, file.filename)
             file.save(filePath)
             fileMgmt.uploadFile(file.filename, email, "jds")
 
-      resumefiles = request.files.getlist("resfiles")
+      
       for file in resumefiles:
          if file.filename:
             filePath = os.path.join(res_foler, file.filename)
