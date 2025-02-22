@@ -112,11 +112,14 @@ class ResumeMetaData():
     def extractMetaData(self, basePath, email, fileId):
 
         if self.checkIfMetaDatExists(fileId):
-            return json.dumps({"msg": "File Metadata Already Exists"})
+            return {"msg": "File Metadata Already Exists"}
 
         sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
 
         results = self.db.select(sql)
+
+        if not results:
+            return {"msg": "No Such File Exists"}
 
         fileName = results[0][0]
         fileType = results[0][1]
