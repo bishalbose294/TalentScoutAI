@@ -96,7 +96,7 @@ class ResumeAnalyzer:
         pass
 
     def checkIfResumeSummaryExists(self, fileId):
-        sql = f""" select fileName, fileType from {schema}.{summaryTable} where fileId = '{fileId}' """
+        sql = f""" select * from {schema}.{summaryTable} where fileId = '{fileId}' """
         result = self.db.select(sql)
         if result:
             return True

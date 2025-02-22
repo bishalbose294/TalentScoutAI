@@ -102,7 +102,7 @@ class ResumeMetaData():
         return self.analyzer.extractKeywords(text)
     
     def checkIfMetaDatExists(self, fileId):
-        sql = f""" select fileName, fileType from {schema}.{keywordTable} where fileId = '{fileId}' """
+        sql = f""" select * from {schema}.{keywordTable} where fileId = '{fileId}' """
         result = self.db.select(sql)
         if result:
             return True
