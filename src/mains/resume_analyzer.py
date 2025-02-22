@@ -7,7 +7,7 @@ from src.text.chunking import Chunk
 from transformers import pipeline
 from src.utils.database import DBConnector
 from datetime import datetime
-
+import simplejson as json
 
 config = configparser.ConfigParser()
 config.read("configs/config.cfg")
@@ -106,7 +106,7 @@ class ResumeAnalyzer:
     def resumeSummarizer(self, basePath, email, fileId):
 
         if not self.checkIfResumeSummaryExists(fileId):
-            return "File Summary Already Exists"
+            return json.dumps({"msg": "File Summary Already Exists"})
 
         sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
 
