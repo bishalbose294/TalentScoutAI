@@ -105,7 +105,7 @@ class ResumeAnalyzer:
 
     def resumeSummarizer(self, basePath, email, fileId):
 
-        if not self.checkIfResumeSummaryExists(fileId):
+        if self.checkIfResumeSummaryExists(fileId):
             return json.dumps({"msg": "File Summary Already Exists"})
 
         sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
