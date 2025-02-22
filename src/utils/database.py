@@ -1,5 +1,6 @@
 import sqlite3
 import configparser
+import traceback
 
 config = configparser.ConfigParser()
 config.read("configs/config.cfg")
@@ -56,24 +57,26 @@ class DBConnector:
             try:
                 self.cursor.execute(table)
             except Exception as ex:
-                print(ex)
+                print(traceback.format_exc())
 
         self.closeConection()
         pass
 
     def createConnection(self,):
-        self.connection = sqlite3.connect(db_file)
-        self.cursor = self.connection.cursor()
+        try:
+            self.connection = sqlite3.connect(db_file, timeout=1)
+            self.cursor = self.connection.cursor()
+        except:
+            print(traceback.format_exc())
         pass
 
     def closeConection(self,):
-        self.connection.commit()
-        self.cursor.close()
-        self.connection.close()
-        pass
-
-    def checkIfTableExists(self, table_name):
-        sql = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'"
+        try:
+            self.connection.commit()
+            self.cursor.close()
+            self.connection.close()
+        except:
+            print(traceback.format_exc())
         pass
 
     def insert(self, sql):

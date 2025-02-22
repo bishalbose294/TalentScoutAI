@@ -2,6 +2,7 @@ from src.utils.database import DBConnector
 import configparser, uuid, os
 from datetime import datetime, timedelta
 import dateutil.relativedelta as relativedelta
+import traceback
 
 config = configparser.ConfigParser()
 config.read("configs/config.cfg")
@@ -103,6 +104,7 @@ class FileManagement:
                os.rmdir(folder[0])
             except Exception as ex:
                print(ex)
+               print(traceback.format_exc())
                pass
         
          else:
