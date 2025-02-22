@@ -95,7 +95,18 @@ class ResumeAnalyzer:
         return resumeSummarize
         pass
 
+    def checkIfResumeSummaryExists(self, fileId):
+        sql = f""" select fileName, fileType from {schema}.{summaryTable} where fileId = '{fileId}' """
+        result = self.db.select(sql)
+        if result:
+            return True
+        return False
+        pass
+
     def resumeSummarizer(self, basePath, email, fileId):
+
+        if not self.checkIfResumeSummaryExists(fileId):
+            return "File Summary Already Exists"
 
         sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
 

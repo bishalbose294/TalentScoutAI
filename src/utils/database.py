@@ -80,30 +80,51 @@ class DBConnector:
         pass
 
     def insert(self, sql):
-        self.createConnection()
-        insertedData = self.cursor.execute(sql)
-        self.closeConection()
+        insertedData = None
+        try:
+            self.createConnection()
+            insertedData = self.cursor.execute(sql)
+        except:
+            print(traceback.format_exc())
+        finally:
+            self.closeConection()
         return insertedData
         pass
 
     def delete(self, sql):
-        self.createConnection()
-        deletedData = self.cursor.execute(sql)
-        self.closeConection()
+        deletedData = None
+        try:
+            self.createConnection()
+            deletedData = self.cursor.execute(sql)
+        except:
+            print(traceback.format_exc())
+        finally:
+            self.closeConection()
         return deletedData
         pass
 
     def select(self, sql):
-        self.createConnection()
-        self.cursor.execute(sql)
-        result = self.cursor.fetchall()
-        self.closeConection()
+        result = None
+        try:
+            self.createConnection()
+            self.cursor.execute(sql)
+            result = self.cursor.fetchall()
+        except:
+            print(traceback.format_exc())
+        finally:
+            self.closeConection()
+        
         return result
         pass
 
     def update(self, sql):
-        self.createConnection()
-        updatedData = self.cursor.execute(sql)
-        self.closeConection()
+        updatedData = None
+        try:
+            self.createConnection()
+            updatedData = self.cursor.execute(sql)
+        except:
+            print(traceback.format_exc())
+        finally:
+            self.closeConection()
         return updatedData
     pass

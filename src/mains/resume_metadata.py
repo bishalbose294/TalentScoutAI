@@ -101,7 +101,18 @@ class ResumeMetaData():
     def extract_keywords(self, text):
         return self.analyzer.extractKeywords(text)
     
+    def checkIfMetaDatExists(self, fileId):
+        sql = f""" select fileName, fileType from {schema}.{keywordTable} where fileId = '{fileId}' """
+        result = self.db.select(sql)
+        if result:
+            return True
+        return False
+        pass
+    
     def extractMetaData(self, basePath, email, fileId):
+
+        if not self.checkIfMetaDatExists(fileId):
+            return "File Metadata Already Exists"
 
         sql = f""" select fileName, fileType from {schema}.{fileTable} where email = '{email}' and fileId = '{fileId}' """
 
